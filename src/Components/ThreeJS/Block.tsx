@@ -51,6 +51,9 @@ function Block({base64Texture}: Block) {
 	        uTexture={texture}
 	        uEnable={true}
           uSaturation={0.1}
+          uBlur={5}
+          uTopY={0.2}
+          uBottomY={0.4}
 	      />
 	      <meshStandardMaterial attach="material-5" color="orange" />
 	      </mesh>
