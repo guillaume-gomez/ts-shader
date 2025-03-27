@@ -15,27 +15,7 @@ const TiltShiftMaterial = shaderMaterial(
     void main() {
       vUv = uv;
       vec3 texture = texture2D(uTexture, uv).rgb;
-
-      float gray = (texture.r * 0.3 + texture.g * 0.59 + texture.b * 0.11);
-      float numberOfFrequencies = 128.0;
-
-
-      int frequencyIndex = uInvertColor ?
-        int(numberOfFrequencies) - int( floor( numberOfFrequencies * gray ) ) :
-        int( floor( numberOfFrequencies * gray ) )
-      ;
-
-      float frequency = frequencies[frequencyIndex];
-
-      vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-
-      float normalisedFrequency = frequency > uFilter ? (frequency / 255.0) : 0.0;
-      modelPosition.z += normalisedFrequency * uAmplitude;
-
-      vec4 viewPosition = viewMatrix * modelPosition;
-      vec4 projectedPosition = projectionMatrix * viewPosition;
-
-      gl_Position = projectedPosition;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
   // fragment shader
