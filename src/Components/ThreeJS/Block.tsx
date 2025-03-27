@@ -16,19 +16,31 @@ interface BlockProps {
 }
 
 function Block({base64Texture}: Block) {
-	const width = 1;
-	const height = 1
-	const meshSize = 128;
+  const [width, setWidth] = useState<number>(2);
+  const [height, setHeight] = useState<number>(2);
+
+  useEffect(() => {
+    async function computeSize() {
+      let img = new Image();
+      img.src = base64Texture;
+      await img.decode();
+      setWidth(1);
+      setHeight(img.height/img.width);
+    }
+    computeSize();
+  }, [base64Texture2]);
 
 	const [texture] = useLoader(TextureLoader, [
-    	base64Texture2
-  	]);
+    base64Texture2
+  ]);
+
+  console.log(width, " ", height)
 	
 	return (
 		<mesh
 	      position={[0,0,0]}
 	    >
-	      <boxGeometry args={[width, height, 0.1, meshSize, meshSize, 1]} />
+	      <boxGeometry args={[width, height, 0.1]} />
 	      <meshStandardMaterial attach="material-0" color="brown" emissive="#000000" roughness={0} metalness={0} />
 	      <meshStandardMaterial attach="material-1" color="red" emissive="#000000" roughness={0} metalness={0} />
 	      <meshStandardMaterial attach="material-2" color="green" emissive="#000000" roughness={0} metalness={0} />
@@ -37,6 +49,8 @@ function Block({base64Texture}: Block) {
 	      <tiltShiftMaterial
 	        attach="material-4"
 	        uTexture={texture}
+	        uEnable={true}
+          uSaturation={0.1}
 	      />
 	      <meshStandardMaterial attach="material-5" color="orange" />
 	      </mesh>
