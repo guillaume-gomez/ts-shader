@@ -1,7 +1,7 @@
 import { shaderMaterial } from "@react-three/drei";
 
 const TiltShiftMaterial = shaderMaterial(
-  { uTexture: null, uSaturation: 0.1, uEnable: false, uBlur: 0.0, uTopY: 0.0, uBottomY: 0.0 },
+  { uTexture: null, uSaturation: 0.1, uEnable: false, uBlur: 0.0, uTopY: 0.0, uBottomY: 0.0, uIntensity: 0.5 },
     // vertex shader
   /*glsl*/`
     varying vec2 vUv;
@@ -70,6 +70,7 @@ const TiltShiftMaterial = shaderMaterial(
     uniform float uBlur;
     uniform float uTopY;
     uniform float uBottomY;
+    uniform float uIntensity;
 
   
     void main() {
@@ -79,12 +80,22 @@ const TiltShiftMaterial = shaderMaterial(
       if(uEnable) {
         //vec3 textureRGBSaturated = saturateFn(textureColor, uSaturation);
         //gl_FragColor = vec4(textureRGBSaturated, 1.0);
+        
+        vec3 blurred_pixel = vec3(0.0);
+
         if ( ((1.0-vUv.y) <uTopY) || vUv.y < uBottomY ){
           vec3 color = blurFn(uTexture, vUv, uBlur);
-          gl_FragColor = vec4(color,1.0);
+          //vec3 color = vec3(0.0,0.0,1.0);
+
+          blurred_pixel = color;
         } else {
-          gl_FragColor = vec4(textureRGB, 1.0);
+          blurred_pixel = textureRGB;
         }
+
+        vec3 textureRGBSaturated = saturateFn(vec4(blurred_pixel, 1.0), uSaturation);
+
+        gl_FragColor = vec4(textureRGBSaturated, 1.0);
+
       } else {
         gl_FragColor = vec4(textureRGB, 1.0);
       }
