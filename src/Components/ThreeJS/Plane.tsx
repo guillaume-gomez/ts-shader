@@ -11,54 +11,33 @@ const base64Texture2 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDA
 // to notify to three-js (it will not work without)
 extend({ TiltShiftMaterial })
 
-interface BlockProps {
+interface PlaneProps {
   base64Texture: string;
+  width: number;
+  height: number;
 }
 
-function Block({base64Texture}: Block) {
-  const [width, setWidth] = useState<number>(1);
-  const [height, setHeight] = useState<number>(0.6625);
-
-  useEffect(() => {
-    async function computeSize() {
-      let img = new Image();
-      img.src = base64Texture;
-      await img.decode();
-      console.log(img.width, " \ ", img.height)
-      setWidth(1);
-      setHeight(img.height/img.width);
-    }
-    computeSize();
-  }, [base64Texture2]);
-
+function Plane({base64Texture, width, height}: PlaneProps) {
 	const [texture] = useLoader(TextureLoader, [
-    base64Texture2
+    base64Texture
   ]);
 
-  console.log(width, " ", height)
-	
 	return (
 		<mesh
 	      position={[0,0,0]}
 	    >
-	      <boxGeometry args={[width, height, 0.1]} />
-	      <meshStandardMaterial attach="material-0" color="brown" emissive="#000000" roughness={0} metalness={0} />
-	      <meshStandardMaterial attach="material-1" color="red" emissive="#000000" roughness={0} metalness={0} />
-	      <meshStandardMaterial attach="material-2" color="green" emissive="#000000" roughness={0} metalness={0} />
-	      <meshStandardMaterial attach="material-3" color="purple" emissive="#000000" roughness={0} metalness={0} />
-	      {/*<meshStandardMaterial attach="material-4" map={texture} />*/}
+	      <planeGeometry args={[width, height]} />
+	      
 	      <tiltShiftMaterial
-	        attach="material-4"
 	        uTexture={texture}
 	        uEnable={true}
-          uSaturation={0.2}
-          uBlur={6}
+	        uSaturation={0.2}
+          uBlur={1}
           uTopY={0.7}
           uBottomY={0.05}
           uIntensity={0.1}
 	      />
-	      <meshStandardMaterial attach="material-5" color="orange" />
 	      </mesh>
 	)
 } 
-export default Block;
+export default Plane;
