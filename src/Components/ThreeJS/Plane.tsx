@@ -16,7 +16,9 @@ interface PlaneProps {
   width: number;
   height: number;
   enableEffect: boolean;
-  saturation: number;
+  debug: boolean;
+  saturation: number;  
+  intensity: number;
   blur: number;
   topY: number;
   bottomY: number;
@@ -27,7 +29,9 @@ function Plane({
   width,
   height,
   enableEffect,
+  debug,
   saturation,
+  intensity,
   blur,
   topY,
   bottomY
@@ -50,7 +54,8 @@ function Plane({
           uBlur={blur}
           uTopY={topY}
           uBottomY={bottomY}
-          uIntensity={0.1}
+          uIntensity={intensity}
+          uDebug={debug}
 	      />
 	      </mesh>
 	)

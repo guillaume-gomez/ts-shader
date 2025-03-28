@@ -11,8 +11,13 @@ function InputFileWithPreview({onChange, imageBase64} : InputFileWithPreviewProp
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.onloadend = function() {
-        const base64data = reader.result;
-        onChange(base64data as string);
+        const image = new Image();
+        image.src = reader.result;
+        image.onload = function () {
+            const base64data = reader.result;
+            onChange(base64data as string, image.width, image.height);
+        };
+
       }
     }
   }

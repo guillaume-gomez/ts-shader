@@ -13,7 +13,9 @@ interface ThreeJSRenderingProps {
     width: number;
     height: number;
     enableEffect: boolean;
+    debug: boolean;
     saturation: number;
+    intensity: number;
     blur: number;
     topY: number;
     bottomY: number;
@@ -25,7 +27,9 @@ function ThreeJSRendering({
   width,
   height,
   enableEffect,
+  debug,
   saturation,
+  intensity,
   blur,
   topY,
   bottomY
@@ -37,23 +41,27 @@ function ThreeJSRendering({
   return (
     <div style={{width, height }} className="flex flex-col gap-5 w-full h-screen">
       <Canvas
-        camera={{ position: [0, 0.0, 0.7], fov: 50, far: 5 }}
+        camera={{ position: [0, 0.0, 1], fov: 50, far: 5 }}
         dpr={window.devicePixelRatio}
         onDoubleClick={toggleFullscreen}
         ref={canvasRef}
       >
         <color attach="background" args={[backgroundColor]} />
         <Suspense fallback={<FallBackLoader/>}>
-          <Plane
-            width={1}
-            height={height/width}
-            base64Texture={base64Texture}
-            enableEffect={enableEffect}
-            saturation={saturation}
-            blur={blur}
-            topY={topY}
-            bottomY={bottomY}
-          />
+          <Bounds fit observe center margin={0.6}  >
+            <Plane
+              width={1}
+              height={height/width}
+              base64Texture={base64Texture}
+              enableEffect={enableEffect}
+              debug={debug}
+              saturation={saturation}
+              intensity={intensity}
+              blur={blur}
+              topY={topY}
+              bottomY={bottomY}
+            />
+          </Bounds>
           
         </Suspense >
       </Canvas>

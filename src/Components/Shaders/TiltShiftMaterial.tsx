@@ -1,7 +1,7 @@
 import { shaderMaterial } from "@react-three/drei";
 
 const TiltShiftMaterial = shaderMaterial(
-  { uTexture: null, uSaturation: 0.1, uEnable: false, uBlur: 0.0, uTopY: 0.0, uBottomY: 0.0, uIntensity: 0.5 },
+  { uTexture: null, uSaturation: 0.1, uEnable: false, uBlur: 0.0, uTopY: 0.0, uBottomY: 0.0, uIntensity: 0.5, uDebug: false },
     // vertex shader
   /*glsl*/`
     varying vec2 vUv;
@@ -80,6 +80,7 @@ const TiltShiftMaterial = shaderMaterial(
     uniform float uTopY;
     uniform float uBottomY;
     uniform float uIntensity;
+    uniform bool uDebug;
 
   
     void main() {
@@ -90,14 +91,16 @@ const TiltShiftMaterial = shaderMaterial(
         vec3 blurred_pixel = vec3(0.0);
 
         // if the pixel is within topBlurBorder or bottomBlurBorder
-        if ( ((1.0-vUv.y) <uTopY) ||  vUv.y < uBottomY ){
+        if ( ((1.0-vUv.y) <= uTopY) ||  vUv.y <= uBottomY ){
           
           float normalisedY = ((1.0-vUv.y) <uTopY) ? 
             reMap((1.0 - vUv.y), 0.0, uTopY, 0.0, 1.0) :
             reMap(vUv.y, 0.0, uBottomY, 0.0, 1.0);
 
-          vec3 color = blurFn(uTexture, vUv, (1.0 - normalisedY) * uBlur);
-          //vec3 color = vec3((1.0 - normalisedY) * uBlur);
+
+          vec3 color = !uDebug ? 
+            blurFn(uTexture, vUv, (1.0 - normalisedY) * uBlur) :
+            vec3((1.0 - normalisedY) * uBlur);
 
 
           blurred_pixel = color;
