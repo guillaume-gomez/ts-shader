@@ -15,9 +15,24 @@ interface PlaneProps {
   base64Texture: string;
   width: number;
   height: number;
+  enableEffect: boolean;
+  saturation: number;
+  blur: number;
+  topY: number;
+  bottomY: number;
 }
 
-function Plane({base64Texture, width, height}: PlaneProps) {
+function Plane({
+  base64Texture,
+  width,
+  height,
+  enableEffect,
+  saturation,
+  blur,
+  topY,
+  bottomY
+
+}: PlaneProps) {
 	const [texture] = useLoader(TextureLoader, [
     base64Texture
   ]);
@@ -30,11 +45,11 @@ function Plane({base64Texture, width, height}: PlaneProps) {
 	      
 	      <tiltShiftMaterial
 	        uTexture={texture}
-	        uEnable={true}
-	        uSaturation={0.2}
-          uBlur={1}
-          uTopY={0.7}
-          uBottomY={0.05}
+	        uEnable={enableEffect}
+	        uSaturation={saturation}
+          uBlur={blur}
+          uTopY={topY}
+          uBottomY={bottomY}
           uIntensity={0.1}
 	      />
 	      </mesh>
