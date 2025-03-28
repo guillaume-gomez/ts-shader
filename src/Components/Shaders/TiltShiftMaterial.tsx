@@ -51,7 +51,7 @@ const TiltShiftMaterial = shaderMaterial(
     );
 
     vec3 blurFn(sampler2D tex, vec2 uv, float blurRatio) {
-      vec2 uShift = vec2(blurRatio/1000.0, 0);
+      vec2 uShift = vec2(blurRatio/1000.0, 0.0);
       vec2 texCoord = uv - float(int(gaussRadius/2)) * uShift;
       vec3 color = vec3(0.0, 0.0, 0.0); 
       for (int i=0; i<gaussRadius; ++i) { 
@@ -62,6 +62,15 @@ const TiltShiftMaterial = shaderMaterial(
       return color;
     }
 
+    float reMap(float value, float start1,float stop1,float start2,float stop2) {
+      return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2;
+    }
+
+
+    float smoothFn(float min, float max, float value) {
+      float remappedValue = reMap(value, min, max, 0.60, 1.0);
+      return remappedValue;
+    }
 
     uniform sampler2D uTexture;
     varying vec2 vUv;
@@ -78,22 +87,26 @@ const TiltShiftMaterial = shaderMaterial(
       vec3 textureRGB = textureColor.rgb;
 
       if(uEnable) {
-        //vec3 textureRGBSaturated = saturateFn(textureColor, uSaturation);
-        //gl_FragColor = vec4(textureRGBSaturated, 1.0);
-        
         vec3 blurred_pixel = vec3(0.0);
 
-        if ( ((1.0-vUv.y) <uTopY) || vUv.y < uBottomY ){
-          vec3 color = blurFn(uTexture, vUv, uBlur);
-          //vec3 color = vec3(0.0,0.0,1.0);
+        // if the pixel is within topBlurBorder or bottomBlurBorder
+        if ( ((1.0-vUv.y) <uTopY) ||  vUv.y < uBottomY ){
+          
+          float normalisedY = ((1.0-vUv.y) <uTopY) ? 
+            reMap((1.0 - vUv.y), 0.0, uTopY, 0.0, 1.0) :
+            reMap(vUv.y, 0.0, uBottomY, 0.0, 1.0);
+
+          vec3 color = blurFn(uTexture, vUv, (1.0 - normalisedY) * uBlur);
+          //vec3 color = vec3((1.0 - normalisedY) * uBlur);
+
 
           blurred_pixel = color;
         } else {
           blurred_pixel = textureRGB;
         }
 
-        vec3 textureRGBSaturated = saturateFn(vec4(blurred_pixel, 1.0), uSaturation);
-
+        vec3 textureRGBSaturated = saturateFn(vec4(blurred_pixel, 0.0), uSaturation);
+        //vec3 textureRGBSaturated = blurred_pixel;
         gl_FragColor = vec4(textureRGBSaturated, 1.0);
 
       } else {
