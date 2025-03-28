@@ -51,8 +51,8 @@ function Block({base64Texture}: Block) {
 	        attach="material-4"
 	        uTexture={texture}
 	        uEnable={true}
-          uSaturation={0.1}
-          uBlur={5}
+          uSaturation={0.2}
+          uBlur={6}
           uTopY={0.7}
           uBottomY={0.05}
           uIntensity={0.1}
