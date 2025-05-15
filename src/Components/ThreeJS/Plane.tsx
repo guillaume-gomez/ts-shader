@@ -1,4 +1,4 @@
-import { Mesh } from 'three';
+import { Mesh, Vector2 } from 'three';
 import { TextureLoader } from 'three';
 import { useRef, useEffect, useState, RefObject } from 'react';
 import useAudioData from "./Hooks/useAudioData";
@@ -56,6 +56,7 @@ function Plane({
           uBottomY={bottomY}
           uIntensity={intensity}
           uDebug={debug}
+          uResolution={new Vector2(1000, 653)}
 	      />
 	      </mesh>
 	)

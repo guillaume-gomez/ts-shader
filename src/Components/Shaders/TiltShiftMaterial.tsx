@@ -1,7 +1,18 @@
+import { Vector2 } from "three";
 import { shaderMaterial } from "@react-three/drei";
 
 const TiltShiftMaterial = shaderMaterial(
-  { uTexture: null, uSaturation: 0.1, uEnable: false, uBlur: 0.0, uTopY: 0.0, uBottomY: 0.0, uIntensity: 0.5, uDebug: false },
+  { 
+    uTexture: null,
+    uSaturation: 0.1,
+    uEnable: false,
+    uBlur: 0.0,
+    uTopY: 0.0,
+    uBottomY: 0.0,
+    uIntensity: 0.5,
+    uDebug: false,
+    uResolution: new Vector2(),
+     },
     // vertex shader
   /*glsl*/`
     varying vec2 vUv;
@@ -74,6 +85,7 @@ const TiltShiftMaterial = shaderMaterial(
 
     uniform sampler2D uTexture;
     varying vec2 vUv;
+    uniform vec2 uResolution;
     uniform bool uEnable;
     uniform float uSaturation;
     uniform float uBlur;
@@ -82,8 +94,54 @@ const TiltShiftMaterial = shaderMaterial(
     uniform float uIntensity;
     uniform bool uDebug;
 
-  
+
+
+    const float pi=4.*atan(1.);
+    const float ang=(3.-sqrt(5.))*pi;
+    float gamma=1.8;
+
+    const float SAMPLES=150.;
+    vec3 bokeh(sampler2D samp,vec2 uv,vec2 radius,float lod){
+      vec3 col = vec3(0);
+        for(float i=0.;i<SAMPLES;i++){
+            float d=i/SAMPLES;
+          vec2 p=vec2(sin(ang*i),cos(ang*i))*sqrt(d)*radius;
+            col+=pow(texture(samp,uv+p,lod).rgb,vec3(gamma));
+        }
+        return pow(col/SAMPLES,vec3(1./gamma));
+    }
+
+
     void main() {
+      vec4 textureColor = texture2D(uTexture, vUv);
+      vec3 textureRGB = textureColor.rgb;
+
+      if(uEnable) {
+        vec3 changed_pixel = vec3(0.0);
+
+        if ( ((1.0-vUv.y) <= uTopY) ||  vUv.y <= uBottomY ){
+          vec2 pix=1./uResolution.xy;
+          
+          float r=uIntensity;
+          r*=r*20.;
+          float lod=log2(r/SAMPLES*pi*5.);
+          vec3 blurred_pixel = bokeh(uTexture,vUv,r*pix,lod);
+    
+          changed_pixel = blurred_pixel;
+        } else {
+          changed_pixel = textureRGB;
+        }
+        
+        vec3 textureRGBSaturated = saturateFn(vec4(changed_pixel, 0.0), uSaturation);
+
+        gl_FragColor = vec4(textureRGBSaturated, 1.0);
+
+      } else {
+        gl_FragColor = vec4(textureRGB, 1.0);
+      }
+    }
+  
+    void oldMain() {
       vec4 textureColor = texture2D(uTexture, vUv);
       vec3 textureRGB = textureColor.rgb;
 
@@ -116,6 +174,8 @@ const TiltShiftMaterial = shaderMaterial(
         gl_FragColor = vec4(textureRGB, 1.0);
       }
     }
+
+
   `
 )
 
