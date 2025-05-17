@@ -46,7 +46,7 @@ const TiltShiftMaterial = shaderMaterial(
         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }
 
-    vec3 saturateFn(vec4 textureColor, float saturationRatio)
+    vec3 saturateFn(vec3 textureColor, float saturationRatio)
     {
       vec3 textureRGB = textureColor.rgb;
       vec3 textureHSV = rgb2hsv(textureRGB).xyz;
@@ -99,17 +99,16 @@ const TiltShiftMaterial = shaderMaterial(
           vec2 pix=1./uResolution.xy;
 
           float r= uIntensity;
-          r*=r*20.;
           float lod=log2(r/SAMPLES*pi*5.);
           
-          float normalisedY = ((1.0-vUv.y) <uTopY) ? 
+          float normalisedRadius = ((1.0-vUv.y) <= uTopY) ? 
             reMap((1.0 - vUv.y), 0.0, uTopY, 0.0, 1.0) :
             reMap(vUv.y, 0.0, uBottomY, 0.0, 1.0);
 
-
+          
           vec3 blurred_pixel = !uDebug ? 
-            bokeh(uTexture, vUv, (1.0 - normalisedY) * r * pix, lod) :
-            vec3((1.0 - normalisedY) * uBlur);
+            bokeh(uTexture, vUv, (1.0 - normalisedRadius) * r * pix, lod) :
+            vec3((1.0 - normalisedRadius) * r);
 
 
           changed_pixel = blurred_pixel;
@@ -117,7 +116,7 @@ const TiltShiftMaterial = shaderMaterial(
           changed_pixel = textureRGB;
         }
         
-        vec3 textureRGBSaturated = saturateFn(vec4(changed_pixel, 0.0), uSaturation);
+        vec3 textureRGBSaturated = saturateFn(changed_pixel, uSaturation);
 
         gl_FragColor = vec4(textureRGBSaturated, 1.0);
 
