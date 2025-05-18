@@ -108,7 +108,7 @@ const TiltShiftMaterial = shaderMaterial(
           
           vec3 blurred_pixel = !uDebug ? 
             bokeh(uTexture, vUv, (1.0 - normalisedRadius) * r * pix, lod) :
-            vec3((1.0 - normalisedRadius) * r);
+            vec3((1.0 - normalisedRadius));
 
 
           changed_pixel = blurred_pixel;
