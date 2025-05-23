@@ -88,6 +88,9 @@ function App() {
         step={0.001}
         float={true}
       />
+      <button className="btn btn-primary">save !</button>
+      <button className="btn btn-secondary">save !</button>
+      <button className="btn btn-accent">save !</button>
       <div>
         {!imageBase64 ?
           <div className="flex flex-col gap-5 items-center">
