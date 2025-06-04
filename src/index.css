@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@font-face {
+  font-family: "Technova";
+  src: local("Technova"),
+    url("/Technova.ttf") format("truetype");
+}
+
+
+@theme {
+  --font-title: Technova, Arial; 
+}
+
+@layer base {
+  html {
+    font-family: sans-serif;
+  }
+}
+
 
 @plugin "daisyui/theme" {
   name: "tilt-shift";
@@ -11,11 +28,11 @@
   --color-base-200: oklch(27% 0.006 285.885);
   --color-base-300: oklch(34% 0.006 286.033);
   --color-base-content: oklch(96% 0.001 286.375);
-  --color-primary: #FF6E31;
-  --color-primary-content: oklch(96% 0.016 293.756);
-  --color-secondary: #243763;
-  --color-secondary-content: oklch(96% 0.016 293.756);
-  --color-accent: #AD8E70;
+  --color-primary: #FDCA40;
+  --color-primary-content: black;
+  --color-secondary: #FB3640;
+  --color-secondary-content: black;
+  --color-accent: #542E71;
   --color-accent-content: oklch(98% 0.016 73.684);
   --color-neutral: oklch(27% 0.006 286.033);
   --color-neutral-content: oklch(98% 0 0);
@@ -27,7 +44,7 @@
   --color-warning-content: oklch(98% 0.016 73.684);
   --color-error: oklch(58% 0.253 17.585);
   --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.5rem;
+  --radius-selector: 0.25rem;
   --radius-field: 0.25rem;
   --radius-box: 0.25rem;
   --size-selector: 0.25rem;
