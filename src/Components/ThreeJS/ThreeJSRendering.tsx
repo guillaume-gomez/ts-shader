@@ -6,6 +6,7 @@ import { Stage, CameraControls,  GizmoHelper, GizmoViewport, Bounds } from '@rea
 import FallBackLoader from "./FallBackLoader";
 import Block from "./Block";
 import Plane from "./Plane";
+import SaveImageButton from "../SaveImageButton";
 
 
 interface ThreeJSRenderingProps {
@@ -15,10 +16,11 @@ interface ThreeJSRenderingProps {
     enableEffect: boolean;
     debug: boolean;
     saturation: number;
-    intensity: number;
     blur: number;
-    topY: number;
-    bottomY: number;
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
 }
 
 
@@ -27,16 +29,16 @@ function ThreeJSRendering({
   width,
   height,
   enableEffect,
-  debug,
   saturation,
-  intensity,
   blur,
-  topY,
-  bottomY
+  top,
+  bottom,
+  left,
+  right
 } : ThreeJSRenderingProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toggleFullscreen } = useFullscreen({ target: canvasRef });
-  const backgroundColor = 0xFF0000;
+  const backgroundColor = "transparent";
 
   return (
     <div style={{width, height }} className="flex flex-col gap-5 w-full h-screen">
@@ -45,26 +47,33 @@ function ThreeJSRendering({
         dpr={window.devicePixelRatio}
         onDoubleClick={toggleFullscreen}
         ref={canvasRef}
+        width={500}
+        height={500 * height/width}
+        gl={{ preserveDrawingBuffer: true }}
       >
         <color attach="background" args={[backgroundColor]} />
         <Suspense fallback={<FallBackLoader/>}>
-          <Bounds fit observe center margin={0.6}  >
+          <Bounds fit observe center margin={1}  >
             <Plane
               width={1}
               height={height/width}
               base64Texture={base64Texture}
               enableEffect={enableEffect}
-              debug={debug}
               saturation={saturation}
-              intensity={intensity}
               blur={blur}
-              topY={topY}
-              bottomY={bottomY}
+              top={top}
+              bottom={bottom}
+              left={left}
+              right={right}
             />
           </Bounds>
-          
         </Suspense >
       </Canvas>
+      <SaveImageButton
+        label="Download"
+        canvasRef={canvasRef}
+        filename="tilt-shift"
+      />
     </div>
   );
 }

@@ -18,10 +18,11 @@ interface PlaneProps {
   enableEffect: boolean;
   debug: boolean;
   saturation: number;  
-  intensity: number;
   blur: number;
-  topY: number;
-  bottomY: number;
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
 }
 
 function Plane({
@@ -29,12 +30,12 @@ function Plane({
   width,
   height,
   enableEffect,
-  debug,
   saturation,
-  intensity,
   blur,
-  topY,
-  bottomY
+  top,
+  bottom,
+  right,
+  left
 
 }: PlaneProps) {
 	const [texture] = useLoader(TextureLoader, [
@@ -52,11 +53,10 @@ function Plane({
 	        uEnable={enableEffect}
 	        uSaturation={saturation}
           uBlur={blur}
-          uTopY={topY}
-          uBottomY={bottomY}
-          uIntensity={intensity}
-          uDebug={debug}
-          uResolution={new Vector2(1000, 653)}
+          uTop={top}
+          uBottom={bottom}
+          uLeft={left}
+          uRight={right}
 	      />
 	      </mesh>
 	)

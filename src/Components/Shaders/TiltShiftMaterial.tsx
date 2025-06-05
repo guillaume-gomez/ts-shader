@@ -7,11 +7,10 @@ const TiltShiftMaterial = shaderMaterial(
     uSaturation: 0.1,
     uEnable: false,
     uBlur: 0.0,
-    uTopY: 0.0,
-    uBottomY: 0.0,
-    uIntensity: 0.5,
-    uDebug: false,
-    uResolution: new Vector2(),
+    uTop: 0.75,
+    uLeft: 0.25,
+    uRight: 0.75,
+    uBottom: 0.25,
      },
     // vertex shader
   /*glsl*/`
@@ -55,74 +54,48 @@ const TiltShiftMaterial = shaderMaterial(
       return hsv2rgb(textureHSV);
     }
 
-    float reMap(float value, float start1,float stop1,float start2,float stop2) {
-      return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2;
+    float normalizea(float min1, float max1, float value)
+    {
+        return (value - min1) / (max1 - min1);
+    }
+
+    float map(float min1, float max1, float min2, float max2, float value)
+    {
+        return mix(min2, max2, normalizea(min1, max1, value));
     }
 
     uniform sampler2D uTexture;
     varying vec2 vUv;
-    uniform vec2 uResolution;
     uniform bool uEnable;
     uniform float uSaturation;
     uniform float uBlur;
-    uniform float uTopY;
-    uniform float uBottomY;
-    uniform float uIntensity;
-    uniform bool uDebug;
+    uniform float uTop;
+    uniform float uBottom;
+    uniform float uLeft;
+    uniform float uRight;
 
-
-
-    const float pi=4.*atan(1.);
-    const float ang=(3.-sqrt(5.))*pi;
-    float gamma=1.8;
-
-    const float SAMPLES=150.;
-    vec3 bokeh(sampler2D samp,vec2 uv,vec2 radius,float lod){
-      vec3 col = vec3(0);
-        for(float i=0.;i<SAMPLES;i++){
-            float d=i/SAMPLES;
-          vec2 p=vec2(sin(ang*i),cos(ang*i))*sqrt(d)*radius;
-            col+=pow(texture(samp,uv+p,lod).rgb,vec3(gamma));
-        }
-        return pow(col/SAMPLES,vec3(1./gamma));
-    }
-
+    const float maxPos = 0.5;
 
     void main() {
       vec4 textureColor = texture2D(uTexture, vUv);
-      vec3 textureRGB = textureColor.rgb;
-
-      if(uEnable) {
-        vec3 changed_pixel = vec3(0.0);
-
-        if ( ((1.0-vUv.y) <= uTopY) ||  vUv.y <= uBottomY ){
-          vec2 pix=1./uResolution.xy;
-
-          float r= uIntensity;
-          float lod=log2(r/SAMPLES*pi*5.);
-          
-          float normalisedRadius = ((1.0-vUv.y) <= uTopY) ? 
-            reMap((1.0 - vUv.y), 0.0, uTopY, 0.0, 1.0) :
-            reMap(vUv.y, 0.0, uBottomY, 0.0, 1.0);
-
-          
-          vec3 blurred_pixel = !uDebug ? 
-            bokeh(uTexture, vUv, (1.0 - normalisedRadius) * r * pix, lod) :
-            vec3((1.0 - normalisedRadius));
-
-
-          changed_pixel = blurred_pixel;
-        } else {
-          changed_pixel = textureRGB;
-        }
-        
-        vec3 textureRGBSaturated = saturateFn(changed_pixel, uSaturation);
-
-        gl_FragColor = vec4(textureRGBSaturated, 1.0);
-
-      } else {
-        gl_FragColor = vec4(textureRGB, 1.0);
+      if(!uEnable) {
+        gl_FragColor = textureColor;
+        return;
       }
+      
+      vec2 uv = vUv;
+      float position = 0.0;
+
+      position = map(0.0, uBottom, maxPos, 0.0, uv.y) * float(uv.y <= uBottom) +
+                 map(uTop, 1.0, 0.0, maxPos, uv.y) * float(uv.y >= uTop) +
+                 map(0.0, uLeft, maxPos, 0.0, uv.x) * float(uv.x <= uLeft) +
+                 map(uRight, 1.0, 0.0, maxPos, uv.x) * float(uv.x >= uRight);
+
+      float bias = position * uBlur;
+
+      vec4 blurred_texture = texture2D(uTexture, uv.xy, bias);      
+      vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, uSaturation);
+      gl_FragColor = vec4(textureRGBSaturated, 1.0);
     }
   `
 )
