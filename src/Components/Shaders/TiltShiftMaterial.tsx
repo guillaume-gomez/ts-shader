@@ -84,18 +84,34 @@ const TiltShiftMaterial = shaderMaterial(
       }
       
       vec2 uv = vUv;
-      float position = 0.0;
+      float position = 0.0;    
+      // TOP / BOTTOM
+      if(uv.y <= uBottom) {
+        position += map(0.0, uBottom, maxPos, 0.0, uv.y);
+      } else if(uv.y >= uTop) {
+        position += map(uTop, 1.0, 0.0, maxPos, uv.y);
+      }
 
-      position = map(0.0, uBottom, maxPos, 0.0, uv.y) * float(uv.y <= uBottom) +
+      // LEFT / RIGHT
+      if(uv.x <= uLeft) {
+        position += map(0.0, uLeft, maxPos, 0.0, uv.x);
+      } else if(uv.x >= uTop) {
+        position += map(uRight, 1.0, 0.0, maxPos, uv.x);
+      }
+
+
+
+/*      position = map(0.0, uBottom, maxPos, 0.0, uv.y) * float(uv.y <= uBottom) +
                  map(uTop, 1.0, 0.0, maxPos, uv.y) * float(uv.y >= uTop) +
                  map(0.0, uLeft, maxPos, 0.0, uv.x) * float(uv.x <= uLeft) +
                  map(uRight, 1.0, 0.0, maxPos, uv.x) * float(uv.x >= uRight);
-
+*/
       float bias = position * uBlur;
 
       vec4 blurred_texture = texture2D(uTexture, uv.xy, bias);      
       vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, uSaturation);
       gl_FragColor = vec4(textureRGBSaturated, 1.0);
+
     }
   `
 )
