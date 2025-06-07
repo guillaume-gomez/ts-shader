@@ -1,7 +1,7 @@
 import { useRef, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useFullscreen } from "rooks";
-import { Mesh, Vector3 } from "three";
+import { Mesh, Vector3, Box3 } from "three";
 import { Stage, CameraControls,  GizmoHelper, GizmoViewport, Bounds } from '@react-three/drei';
 import FallBackLoader from "./FallBackLoader";
 import Block from "./Block";
@@ -43,17 +43,32 @@ function ThreeJSRendering({
   return (
     <div style={{width, height }} className="flex flex-col gap-5 w-full h-screen">
       <Canvas
-        camera={{ position: [0, 0.0, 1], fov: 50, far: 5 }}
+        camera={{ position: [0, 0.0, 0.5], fov: 50, far: 5 }}
         dpr={window.devicePixelRatio}
         onDoubleClick={toggleFullscreen}
         ref={canvasRef}
         width={500}
-        height={500 * height/width}
+        height={500 * (height/width)}
+        style={{width: 500, height: (500 * (height/width))}}
+        onCreated={(state) => {
+          let camera = state.camera;
+          const fov = camera.fov * ( Math.PI / 180 );
+          const fovh = 2*Math.atan(Math.tan(fov/2) * camera.aspect);
+          
+          const size = new Vector3(1, height/width, 0.001);
+
+          let dx = size.z / 2 + Math.abs( size.x / 2 / Math.tan( fovh / 2 ) );
+          let dy = size.z / 2 + Math.abs( size.y / 2 / Math.tan( fov / 2 ) );
+          let cameraZ = Math.max(dx, dy);
+
+          camera.position.set( 0, 0, cameraZ );
+          }
+        }
         gl={{ preserveDrawingBuffer: true }}
       >
         <color attach="background" args={[backgroundColor]} />
         <Suspense fallback={<FallBackLoader/>}>
-          <Bounds fit observe center margin={1}  >
+          
             <Plane
               width={1}
               height={height/width}
@@ -66,7 +81,7 @@ function ThreeJSRendering({
               left={left}
               right={right}
             />
-          </Bounds>
+         
         </Suspense >
       </Canvas>
       <SaveImageButton
