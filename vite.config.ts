@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     checker({
-      typescript: true,
+      typescript: "tsconfig.app.json"
     }),
   ],
 });
