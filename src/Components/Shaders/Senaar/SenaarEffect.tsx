@@ -11,7 +11,8 @@ import senaarShader from './SenaarShader';
 export interface SenaarEffectOptions {
   time?: number;
   resolution?: THREE.Vector2;
-  gridSize?: number;
+  color: THREE.Color;
+  enableStripe: boolean;
 }
 
 /**
@@ -32,16 +33,18 @@ class SenaarEffect extends Effect {
     time = 0,
     resolution = new THREE.Vector2(1, 1),
     color = new THREE.Color(0xFF0055),
-  }: DitheringEffectOptions = {}) {
+    enableStripe = true
+  }: SenaarEffectOptions) {
     console.log(color)
     // Initialize uniforms with default values
     const uniforms = new Map<string, THREE.Uniform<number | THREE.Vector2>>([
       ["time", new THREE.Uniform(time)],
       ["resolution", new THREE.Uniform(resolution)],
       ["colorGradiant", new THREE.Uniform(color)],
+      ["enableStripe", new THREE.Uniform(enableStripe ? 1 : 0)],
     ]);
 
-    super("DitheringEffect", senaarShader, {
+    super("SenaarEffect", senaarShader, {
       // blendFunction: BlendFunction.SCREEN,
       uniforms
     });
@@ -100,10 +103,21 @@ class SenaarEffect extends Effect {
       colorGradiant.value = size;
     }
   }
+
+  /**
+   * Sets the grid size for the dithering pattern
+   * @param size - The grid size value
+   */
+  setEnableStripe(value: boolean): void {
+    const enableStripe = this.uniforms.get("enableStripe");
+    if (enableStripe !== undefined) {
+      enableStripe.value = value;
+    }
+  }
 }
 
 // Effect component
-const SenaarEffectWrapper = forwardRef(({ param }, ref) => {
+const SenaarEffectWrapper = forwardRef(({ param } : SenaarEffectOptions, ref) => {
   const effect = useMemo(() => new SenaarEffect(param), [param])
   return <primitive ref={ref} object={effect} dispose={null} />
 });

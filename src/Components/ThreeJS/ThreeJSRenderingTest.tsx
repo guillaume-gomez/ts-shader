@@ -1,11 +1,13 @@
 import { useRef, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useFullscreen } from "rooks";
-import { Mesh, Vector3, Box3 } from "three";
+import { Mesh, Vector3, Box3, Color } from "three";
 import { Stage, CameraControls,  GizmoHelper, GizmoViewport, Box  } from '@react-three/drei';
 import FallBackLoader from "./FallBackLoader";
 import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import DitheringEffect from "../Shaders/Dithering/DitheringEffect";
+import SenaarEffect from "../Shaders/Senaar/SenaarEffect";
+import ShapeTest from "../Shape";
 
 
 interface ThreeJSRenderingProps {
@@ -40,15 +42,22 @@ function ThreeJSRendering({
             >
               <meshPhongMaterial color="#f3f3f3" wireframe={false} />
             </Box>
+            <ShapeTest />
+
           </Stage>
          
-         <EffectComposer>
+         {/*<EffectComposer>
             <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
             <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
             <Noise opacity={0.02} />
             <Vignette eskil={false} offset={0.1} darkness={1.1} />
             <DitheringEffect param={{gridSize: 10}} />
-          </EffectComposer>
+          </EffectComposer>*/}
+        <EffectComposer>
+          <SenaarEffect param={{color: new Color(0x00FF00), enableStripe: true }} />
+          <Noise opacity={0.52} />
+          <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        </EffectComposer>
         </Suspense >
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
           <GizmoViewport labelColor="white" axisHeadScale={1} />
