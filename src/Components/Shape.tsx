@@ -54,8 +54,8 @@ function ShapeTest({
           uLightPos={ new Vector3(0, 5, 3)}
           uLightColor={ new Color(0xffffff)}
           uLightIntensity={0.7}
-          uNoiseScale={0.4}
-          uNoiseCoef={0.4}
+          uNoiseScale={0.8}
+          uNoiseCoef={0.8}
         />
         </mesh>
   )
