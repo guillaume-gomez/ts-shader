@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ThreeJSRendering from "./Components/ThreeJS/ThreeJSRendering";
+import ThreeJSRendering2 from "./Components/ThreeJS/ThreeJSRenderingTest";
 import InputFileWithPreview from "./Components/InputFileWithPreview";
 import Toggle from "./Components/Toggle";
 import Range from "./Components/Range";
@@ -13,12 +14,13 @@ function App() {
   const [width, setWidth] = useState<number>(0);
   const [height, setHeight] = useState<number>(0);
   const [enable, setEnable] = useState<boolean>(true);
-  const [debug, setDebug] = useState<boolean>(true);
-  const [intensity, setIntensity] = useState<number>(1);
   const [saturation, setSaturation] = useState<number>(0);
   const [blur, setBlur] = useState<number>(1);
-  const [topY, setTopY] = useState<number>(0);
-  const [bottomY, setBottomY] = useState<number>(0.0);
+  const [maxPos, setMaxPos] = useState<number>(0.5);
+  const [top, setTop] = useState<number>(0.75);
+  const [right, setRight] = useState<number>(0.75);
+  const [left, setLeft] = useState<number>(0.25);
+  const [bottom, setBottom] = useState<number>(0.25);
 
   function onChange(imageBase64: string, width: number, height: number) {
     setImageBase64(imageBase64);
@@ -27,8 +29,9 @@ function App() {
   }
 
   return (
-    <div className="bg-base-100 flex flex-col gap-4">
+    <div className="bg-base-100 flex flex-row gap-4">
       <h1 className="text-6xl font-title">Tilt shift shader</h1>
+      <ThreeJSRendering2/>
       <Card title={"Settings"}>
         <InputFileWithPreview
             onChange={onChange}
@@ -38,11 +41,6 @@ function App() {
           label="enable effect"
           onToggle={(value) => setEnable(value)}
           value={enable}
-        />
-        <Toggle
-          label="debug"
-          onToggle={(value) => setDebug(value)}
-          value={debug}
         />
         <Range 
           label="Saturation"
@@ -58,32 +56,50 @@ function App() {
           value={blur}
           onChange={(newValue) => setBlur(newValue)}
           min={0}
+          max={20}
+          step={0.01}
+          float={true}
+        />
+        <Range 
+          label="Max pos"
+          value={maxPos}
+          onChange={(newValue) => setMaxPos(newValue)}
+          min={0}
+          max={5}
+          step={0.1}
+          float={true}
+        />
+        <Range 
+          label="Right"
+          value={right}
+          onChange={(newValue) => setRight(newValue)}
+          min={0}
           max={1}
           step={0.01}
           float={true}
         />
         <Range 
-          label="Intensity"
-          value={intensity}
-          onChange={(newValue) => setIntensity(newValue)}
+          label="Left"
+          value={left}
+          onChange={(newValue) => setLeft(newValue)}
           min={0}
-          max={100}
+          max={1}
           step={0.01}
           float={true}
         />
         <Range 
-          label="topY"
-          value={topY}
-          onChange={(newValue) => setTopY(newValue)}
+          label="top"
+          value={top}
+          onChange={(newValue) => setTop(newValue)}
           min={0}
           max={1}
           step={0.001}
           float={true}
         />
         <Range 
-          label="bottomY"
-          value={bottomY}
-          onChange={(newValue) => setBottomY(newValue)}
+          label="bottom"
+          value={bottom}
+          onChange={(newValue) => setBottom(newValue)}
           min={0}
           max={1}
           step={0.001}
@@ -101,12 +117,13 @@ function App() {
             width={width}
             height={height}
             enableEffect={enable}
-            debug={debug}
             saturation={saturation}
-            intensity={intensity}
             blur={blur}
-            topY={topY}
-            bottomY={bottomY}
+            top={top}
+            bottom={bottom}
+            maxPos={maxPos}
+            right={right}
+            left={left}
           />
         }
       </Card>
