@@ -7,6 +7,7 @@ import FallBackLoader from "./FallBackLoader";
 import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import DitheringEffect from "../Shaders/Dithering/DitheringEffect";
 import SenaarEffect from "../Shaders/Senaar/SenaarEffect";
+import TiltShiftEffect from "../Shaders/TiltShift/TiltShiftEffect";
 import ShapeTest from "../Shape";
 
 
@@ -54,9 +55,8 @@ function ThreeJSRendering({
             <DitheringEffect param={{gridSize: 10}} />
           </EffectComposer>*/}
         <EffectComposer>
-          <SenaarEffect param={{color: new Color(0x00FF00), enableStripe: true }} />
-          <Noise opacity={0.52} />
-          <Vignette eskil={false} offset={0.1} darkness={1.1} />
+         <SenaarEffect param={{color: new Color(0x909000), enableStripe: true, stripeDirection: -4.0, gradiantCurve: 0.5 }} />
+          {/*<TiltShiftEffect param={{time: 0, top: 0.5, bottom: 0.2, right: 0.2, left: 0.25, saturation: 0, blur: 100, enable: true }}/>*/}
         </EffectComposer>
         </Suspense >
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
