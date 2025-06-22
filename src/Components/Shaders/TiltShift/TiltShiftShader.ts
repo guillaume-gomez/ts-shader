@@ -7,6 +7,11 @@
  */
 
 const TiltShiftShader = /*glsl*/`
+    #define PI 3.14159265359
+    #define ITER 3.0
+    #define MAX 0.9
+
+
     uniform vec2 resolution;
     uniform bool enable;
     uniform float saturation;
@@ -55,21 +60,82 @@ const TiltShiftShader = /*glsl*/`
         return mix(min2, max2, normalizea(min1, max1, value));
     }
 
+    float rand( const in vec2 uv )
+    {
+        const float a = 12.9898, b = 78.233, c = 43758.5453;
+        float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );
+        return fract(sin(sn) * c);
+    }
+
+    vec4 triangleBlur(const in vec2 uv, float blurX, float blurY)
+    {
+        vec2 delta = vec2(blurX, blurY);
+        vec4 sum = vec4(0.0);
+        float total = 0.0;
+        float offset = rand(uv);
+        for ( float t = -ITER; t <= ITER; t++) {
+
+            float percent = (t + offset - 0.5) / ITER;
+            float weight = 1.0 - abs(percent);
+            sum += texture2D(iChannel0, uv + delta * percent) * weight;
+            total += weight;
+      
+        }
+        return sum / total;
+    }
+
+
     void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-      vec2 fragCoord = uv * resolution;
-      if(!enable) {
-        outputColor = inputColor;
-        return;
-      }
-    
+        vec2 fragCoord = uv * resolution;
+        
+        // Normalized pixel coordinates (from 0 to 1)
+        vec2 uv = fragCoord/iResolution.xy;
+        float left = 0.4;
+        float right = 0.6;
+        float top = 0.6;
+        float bottom = 0.4;
+        
+        
+        if(uv.x >= left && uv.x <= right) {
+          fragColor =  texture(iChannel0, uv);
+          return;
+        }
+       
+        if(uv.y <= top && uv.y >= bottom) {
+          fragColor =  texture(iChannel0, uv);
+          return;
+        }
+        
+        float blurX = 0.;
+        float blurY = 0.;
+        
+        if(uv.x < left) {
+            blurX = map(0.0, left, MAX, 0.0, uv.x);
+        }
+        else if(uv.x > right) {
+            blurX = map(right, 1.0, 0., MAX, uv.x);
+        }
+        
+        
+        if(uv.y > top) {
+            blurY = map(top, 1.0, 0., MAX, uv.y);
+        }
+        else if(uv.y < bottom) {
+            blurY = map(0.0, bottom, MAX, 0.0, uv.y);
+        }
+        
+        
+        // debug
+        outputColor = vec4(blurY, blurX,0.0,1.0);
+
+        // Output to screen
+       // outputColor = triangleBlur(uv, blurX, blurY);
+
 
       //vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, saturation);
       //outputColor = vec4(textureRGBSaturated, inputColor.a);
-
-      vec4 baseColor = texture2D(inputBuffer, uv);
-      float biais = map(0.0, 0.2, 0.5, 0.0, uv.y);
-      outputColor = mix(baseColor, inputColor, biais);
    }
+
 `;
 
 export default TiltShiftShader; 
