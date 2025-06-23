@@ -7,10 +7,9 @@
  */
 
 const TiltShiftShader = /*glsl*/`
-    #define PI 3.14159265359
-    #define ITER 3.0
-    #define MAX 0.9
 
+    float ITER=3.0;
+    float MAX=0.9;
 
     uniform vec2 resolution;
     uniform bool enable;
@@ -55,10 +54,11 @@ const TiltShiftShader = /*glsl*/`
         return (value - min1) / (max1 - min1);
     }
 
-    float map(float min1, float max1, float min2, float max2, float value)
+    float computeFonction(float min1, float max1, float value)
     {
-        return mix(min2, max2, normalizea(min1, max1, value));
+        return smoothstep(0.5, 1.0, normalizea(min1, max1, value));
     }
+
 
     float rand( const in vec2 uv )
     {
@@ -67,7 +67,7 @@ const TiltShiftShader = /*glsl*/`
         return fract(sin(sn) * c);
     }
 
-    vec4 triangleBlur(const in vec2 uv, float blurX, float blurY)
+    vec4 triangleBlur(sampler2D text, const in vec2 uv, float blurX, float blurY)
     {
         vec2 delta = vec2(blurX, blurY);
         vec4 sum = vec4(0.0);
@@ -77,7 +77,7 @@ const TiltShiftShader = /*glsl*/`
 
             float percent = (t + offset - 0.5) / ITER;
             float weight = 1.0 - abs(percent);
-            sum += texture2D(iChannel0, uv + delta * percent) * weight;
+            sum += texture2D(text, uv + delta * percent) * weight;
             total += weight;
       
         }
@@ -86,52 +86,46 @@ const TiltShiftShader = /*glsl*/`
 
 
     void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-        vec2 fragCoord = uv * resolution;
-        
+
         // Normalized pixel coordinates (from 0 to 1)
-        vec2 uv = fragCoord/iResolution.xy;
-        float left = 0.4;
-        float right = 0.6;
+        float left = 0.1;
+        float right = 0.8;
         float top = 0.6;
-        float bottom = 0.4;
+        float bottom = 0.2;
+
+        //outputColor = texture2D(inputBuffer, uv);
         
         
-        if(uv.x >= left && uv.x <= right) {
-          fragColor =  texture(iChannel0, uv);
+        if(uv.x >= left && uv.x <= right && uv.y <= top && uv.y >= bottom) {
+          outputColor =  inputColor;
           return;
         }
        
-        if(uv.y <= top && uv.y >= bottom) {
-          fragColor =  texture(iChannel0, uv);
-          return;
-        }
-        
+    
         float blurX = 0.;
         float blurY = 0.;
         
         if(uv.x < left) {
-            blurX = map(0.0, left, MAX, 0.0, uv.x);
+            blurX = MAX * computeFonction(left, 0.0, uv.x);
         }
         else if(uv.x > right) {
-            blurX = map(right, 1.0, 0., MAX, uv.x);
+            blurX = MAX * computeFonction(right, 1.0, uv.x);
         }
         
         
         if(uv.y > top) {
-            blurY = map(top, 1.0, 0., MAX, uv.y);
+            blurY = MAX * computeFonction(top, 1.0, uv.y);
         }
         else if(uv.y < bottom) {
-            blurY = map(0.0, bottom, MAX, 0.0, uv.y);
+            blurY = MAX * computeFonction(left, 0.0, uv.y);
         }
         
         
         // debug
         outputColor = vec4(blurY, blurX,0.0,1.0);
 
-        // Output to screen
-       // outputColor = triangleBlur(uv, blurX, blurY);
-
-
+      // Output to screen
+      // vec4 blurred_texture = triangleBlur(inputBuffer, uv, blurX, blurY);
       //vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, saturation);
       //outputColor = vec4(textureRGBSaturated, inputColor.a);
    }
