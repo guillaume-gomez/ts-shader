@@ -12,3 +12,6 @@ https://godotshaders.com/shader/tilt-shift-shader/
 
 
 http://www.tiltshiftphotography.net/tilt-shift-photography-photoshop-tutorial/
+
+https://wejn.org/2020/12/cracking-the-threejs-object-fitting-nut/
+https://github.com/mrdoob/three.js/blob/52b10d5f3a3813325f03e66141a3344ffc81adf9/examples/jsm/shaders/TriangleBlurShader.js#L63
