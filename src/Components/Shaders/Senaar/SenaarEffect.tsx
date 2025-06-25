@@ -33,15 +33,18 @@ class SenaarEffect extends Effect {
     time = 0,
     resolution = new THREE.Vector2(1, 1),
     color = new THREE.Color(0xFF0055),
+    stripeDirection = -0.7,
+    gradiantCurve = 1.0,
     enableStripe = true
   }: SenaarEffectOptions) {
-    console.log(color)
     // Initialize uniforms with default values
-    const uniforms = new Map<string, THREE.Uniform<number | THREE.Vector2>>([
+    const uniforms = new Map<string, THREE.Uniform<number | THREE.Vector2 | THREE.Color >>([
       ["time", new THREE.Uniform(time)],
       ["resolution", new THREE.Uniform(resolution)],
       ["colorGradiant", new THREE.Uniform(color)],
+      ["stripeDirection", new THREE.Uniform(stripeDirection)],
       ["enableStripe", new THREE.Uniform(enableStripe ? 1 : 0)],
+      ["gradiantCurve", new THREE.Uniform(gradiantCurve)],
     ]);
 
     super("SenaarEffect", senaarShader, {
@@ -93,10 +96,6 @@ class SenaarEffect extends Effect {
     // No special initialization required for this effect
   }
 
-  /**
-   * Sets the grid size for the dithering pattern
-   * @param size - The grid size value
-   */
   setColorGradiant(color: THREE.Color): void {
     const colorGradiant = this.uniforms.get("colorGradiant");
     if (colorGradiant !== undefined) {
@@ -104,17 +103,29 @@ class SenaarEffect extends Effect {
     }
   }
 
-  /**
-   * Sets the grid size for the dithering pattern
-   * @param size - The grid size value
-   */
   setEnableStripe(value: boolean): void {
     const enableStripe = this.uniforms.get("enableStripe");
     if (enableStripe !== undefined) {
       enableStripe.value = value;
     }
   }
+  
+  setStripeDiection(direction: float): void {
+    const stripeDirection = this.uniforms.get("stripeDirection");
+    if (stripeDirection !== undefined) {
+      stripeDirection.value = direction;
+    }
+  }
+
+  setGradiantCurve(value: float): void {
+    const gradiantCurve = this.uniforms.get("gradiantCurve");
+    if (gradiantCurve !== undefined) {
+      gradiantCurve.value = value;
+    }
+  }
+
 }
+
 
 // Effect component
 const SenaarEffectWrapper = forwardRef(({ param } : SenaarEffectOptions, ref) => {
