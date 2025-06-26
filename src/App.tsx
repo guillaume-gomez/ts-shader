@@ -31,7 +31,16 @@ function App() {
   return (
     <div className="bg-base-100 flex flex-row gap-4">
       <h1 className="text-6xl font-title">Tilt shift shader</h1>
-      <ThreeJSRendering2/>
+      <ThreeJSRendering2
+        enableEffect={enable}
+        saturation={saturation}
+        blur={blur}
+        top={top}
+        bottom={bottom}
+        maxPos={maxPos}
+        right={right}
+        left={left}
+      />
       <Card title={"Settings"}>
         <InputFileWithPreview
             onChange={onChange}
