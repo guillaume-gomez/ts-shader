@@ -11,16 +11,35 @@ import TiltShiftEffect from "../Shaders/TiltShift/TiltShiftEffect";
 import ShapeTest from "../Shape";
 
 
+
 interface ThreeJSRenderingProps {
-   
+    enableEffect: boolean;
+    debug: boolean;
+    maxPos: number;
+    saturation: number;
+    blur: number;
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
 }
 
 
+
 function ThreeJSRendering({
- 
+ enableEffect,
+  saturation,
+  maxPos,
+  blur,
+  top,
+  bottom,
+  left,
+  right
 } : ThreeJSRenderingProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toggleFullscreen } = useFullscreen({ target: canvasRef });
+
+  console.log(top)
 
   return (
     <div className="flex flex-col gap-5 w-full h-screen">
@@ -43,6 +62,18 @@ function ThreeJSRendering({
             >
               <meshPhongMaterial color="#f3f3f3" wireframe={false} />
             </Box>
+            {
+              Array.from({ length: 25 }).map(i => {
+                return (
+                  <Box
+                    position={[Math.random() * 25.0, 0, Math.random() * 10]}
+                    args={[0.5, 1, 1]} // Width, height, depth. Default is [1, 1, 1]
+                  >
+                    <meshPhongMaterial color={0xFFFFFF * Math.random()} wireframe={false} />
+                  </Box>
+                );
+              })
+            }
             <ShapeTest />
 
           </Stage>
@@ -55,8 +86,20 @@ function ThreeJSRendering({
             <DitheringEffect param={{gridSize: 10}} />
           </EffectComposer>*/}
         <EffectComposer>
-         <SenaarEffect param={{color: new Color(0x909000), enableStripe: true, stripeDirection: -4.0, gradiantCurve: 0.5 }} />
-          {/*<TiltShiftEffect param={{time: 0, top: 0.5, bottom: 0.2, right: 0.2, left: 0.25, saturation: 0, blur: 100, enable: true }}/>*/}
+         {/*<SenaarEffect param={{color: new Color(0x909000), enableStripe: true, stripeDirection: -4.0, gradiantCurve: 0.5 }} />*/}
+          <TiltShiftEffect
+            param={{
+              time: 0,
+              top,
+              bottom,
+              right,
+              left,
+              saturation,
+              blur,
+              enable: enableEffect,
+              rotation: 0.0,
+            }}
+          />
         </EffectComposer>
         </Suspense >
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
