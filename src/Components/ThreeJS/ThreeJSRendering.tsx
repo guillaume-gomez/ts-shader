@@ -15,6 +15,7 @@ interface ThreeJSRenderingProps {
     height: number;
     enableEffect: boolean;
     debug: boolean;
+    maxPos: number;
     saturation: number;
     blur: number;
     top: number;
@@ -30,6 +31,7 @@ function ThreeJSRendering({
   height,
   enableEffect,
   saturation,
+  maxPos,
   blur,
   top,
   bottom,
@@ -49,7 +51,7 @@ function ThreeJSRendering({
         ref={canvasRef}
         width={500}
         height={500 * (height/width)}
-        style={{width: 500, height: (500 * (height/width))}}
+       // style={{width: 500, height: (500 * (height/width))}}
         onCreated={(state) => {
           let camera = state.camera;
           const fov = camera.fov * ( Math.PI / 180 );
@@ -80,6 +82,7 @@ function ThreeJSRendering({
               bottom={bottom}
               left={left}
               right={right}
+              maxPos={maxPos}
             />
          
         </Suspense >
