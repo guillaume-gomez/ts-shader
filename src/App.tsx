@@ -29,113 +29,115 @@ function App() {
   }
 
   return (
-    <div className="bg-base-100 flex flex-row gap-4">
+    <div className="bg-base-100 flex flex-col gap-4">
       <h1 className="text-6xl font-title">Tilt shift shader</h1>
-      <ThreeJSRendering2
-        enableEffect={enable}
-        saturation={saturation}
-        blur={blur}
-        top={top}
-        bottom={bottom}
-        maxPos={maxPos}
-        right={right}
-        left={left}
-      />
-      <Card title={"Settings"}>
-        <InputFileWithPreview
-            onChange={onChange}
-            imageBase64={imageBase64}
-        />
-        <Toggle
-          label="enable effect"
-          onToggle={(value) => setEnable(value)}
-          value={enable}
-        />
-        <Range 
-          label="Saturation"
-          value={saturation}
-          onChange={(newValue) => setSaturation(newValue)}
-          min={0}
-          max={2}
-          step={0.01}
-          float={true}
-        />
-        <Range 
-          label="Blur"
-          value={blur}
-          onChange={(newValue) => setBlur(newValue)}
-          min={0}
-          max={20}
-          step={0.01}
-          float={true}
-        />
-        <Range 
-          label="Max pos"
-          value={maxPos}
-          onChange={(newValue) => setMaxPos(newValue)}
-          min={0}
-          max={5}
-          step={0.1}
-          float={true}
-        />
-        <Range 
-          label="Right"
-          value={right}
-          onChange={(newValue) => setRight(newValue)}
-          min={0}
-          max={1}
-          step={0.01}
-          float={true}
-        />
-        <Range 
-          label="Left"
-          value={left}
-          onChange={(newValue) => setLeft(newValue)}
-          min={0}
-          max={1}
-          step={0.01}
-          float={true}
-        />
-        <Range 
-          label="top"
-          value={top}
-          onChange={(newValue) => setTop(newValue)}
-          min={0}
-          max={1}
-          step={0.001}
-          float={true}
-        />
-        <Range 
-          label="bottom"
-          value={bottom}
-          onChange={(newValue) => setBottom(newValue)}
-          min={0}
-          max={1}
-          step={0.001}
-          float={true}
-        />
-      </Card>
-      <Card title="Result">
-        {!imageBase64 ?
-          <div className="flex flex-col gap-5 items-center">
-            <span className="loading loading-bars w-16 text-primary"></span>
-            <span>render explanation</span>
-          </div> :
-          <ThreeJSRendering
-            base64Texture={imageBase64}
-            width={width}
-            height={height}
-            enableEffect={enable}
-            saturation={saturation}
-            blur={blur}
-            top={top}
-            bottom={bottom}
-            maxPos={maxPos}
-            right={right}
-            left={left}
+      <div className="flex flex-row gap-2">
+        {/*<ThreeJSRendering2
+          enableEffect={enable}
+          saturation={saturation}
+          blur={blur}
+          top={top}
+          bottom={bottom}
+          maxPos={maxPos}
+          right={right}
+          left={left}
+        />*/}
+        <Card title={"Settings"}>
+          <InputFileWithPreview
+              onChange={onChange}
+              imageBase64={imageBase64}
           />
-        }
-      </Card>
+          <Toggle
+            label="enable effect"
+            onToggle={(value) => setEnable(value)}
+            value={enable}
+          />
+          <Range 
+            label="Saturation"
+            value={saturation}
+            onChange={(newValue) => setSaturation(newValue)}
+            min={0}
+            max={2}
+            step={0.01}
+            float={true}
+          />
+          <Range 
+            label="Blur"
+            value={blur}
+            onChange={(newValue) => setBlur(newValue)}
+            min={0}
+            max={20}
+            step={0.01}
+            float={true}
+          />
+          <Range 
+            label="Max pos"
+            value={maxPos}
+            onChange={(newValue) => setMaxPos(newValue)}
+            min={0}
+            max={5}
+            step={0.1}
+            float={true}
+          />
+          <Range 
+            label="Right"
+            value={right}
+            onChange={(newValue) => setRight(newValue)}
+            min={0}
+            max={1}
+            step={0.01}
+            float={true}
+          />
+          <Range 
+            label="Left"
+            value={left}
+            onChange={(newValue) => setLeft(newValue)}
+            min={0}
+            max={1}
+            step={0.01}
+            float={true}
+          />
+          <Range 
+            label="top"
+            value={top}
+            onChange={(newValue) => setTop(newValue)}
+            min={0}
+            max={1}
+            step={0.001}
+            float={true}
+          />
+          <Range 
+            label="bottom"
+            value={bottom}
+            onChange={(newValue) => setBottom(newValue)}
+            min={0}
+            max={1}
+            step={0.001}
+            float={true}
+          />
+        </Card>
+        <Card title="Result">
+          {!imageBase64 ?
+            <div className="flex flex-col gap-5 items-center">
+              <span className="loading loading-bars w-16 text-primary"></span>
+              <span>render explanation</span>
+            </div> :
+            <ThreeJSRendering
+              base64Texture={imageBase64}
+              width={width}
+              height={height}
+              enableEffect={enable}
+              saturation={saturation}
+              blur={blur}
+              top={top}
+              bottom={bottom}
+              maxPos={maxPos}
+              right={right}
+              left={left}
+            />
+          }
+        </Card>
+      </div>
     </div>
   )
 }
