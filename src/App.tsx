@@ -17,8 +17,8 @@ function App() {
   const [saturation, setSaturation] = useState<number>(0);
   const [blur, setBlur] = useState<number>(1);
   const [maxPos, setMaxPos] = useState<number>(0.5);
-  const [top, setTop] = useState<number>(0.75);
-  const [right, setRight] = useState<number>(0.75);
+  const [top, setTop] = useState<number>(0.25);
+  const [right, setRight] = useState<number>(0.25);
   const [left, setLeft] = useState<number>(0.25);
   const [bottom, setBottom] = useState<number>(0.25);
 
@@ -116,7 +116,8 @@ function App() {
             float={true}
           />
         </Card>
-        <Card title="Result">
+        
+        <Card title="Result" className="grow flex w-full h-full">
           {!imageBase64 ?
             <div className="flex flex-col gap-5 items-center">
               <span className="loading loading-bars w-16 text-primary"></span>
@@ -137,6 +138,7 @@ function App() {
             />
           }
         </Card>
+        
       </div>
     </div>
   )
