@@ -6,6 +6,8 @@ const TiltShiftMaterial = shaderMaterial(
     uTexture: null,
     uSaturation: 0.1,
     uEnable: false,
+    uDebug: false,
+    uThreshold: 0.5,
     uBlur: 0.0,
     uTop: 0.75,
     uLeft: 0.25,
@@ -60,61 +62,60 @@ const TiltShiftMaterial = shaderMaterial(
         return (value - min1) / (max1 - min1);
     }
 
-    float map(float min1, float max1, float min2, float max2, float value)
+    uniform float uThreshold;
+    float computeFonction(float min1, float max1, float value)
     {
-        return mix(min2, max2, normalizea(min1, max1, value));
+        return smoothstep(uThreshold, 1.0, normalizea(min1, max1, value));
     }
 
     uniform sampler2D uTexture;
     varying vec2 vUv;
     uniform bool uEnable;
+    uniform bool uDebug;
     uniform float uSaturation;
     uniform float uBlur;
     uniform float uTop;
     uniform float uBottom;
     uniform float uLeft;
     uniform float uRight;
-    uniform float uMaxPos;
+
 
     void main() {
-      vec4 textureColor = texture2D(uTexture, vUv);
-      if(!uEnable) {
-        gl_FragColor = textureColor;
+     vec2 uv = vUv;
+     
+     if(!uEnable) {
+        gl_FragColor =  texture2D(uTexture, uv, 0.0);
         return;
       }
       
-      vec2 uv = vUv;
       float position = 0.0;    
       // TOP / BOTTOM
       if(uv.y <= uBottom) {
-        position += map(0.0, uBottom, uMaxPos, 0.0, uv.y);
+          position += computeFonction(uBottom, 0.0, uv.y);
       } 
 
-      if(uv.y >= uTop) {
-        position += map(uTop, 1.0, 0.0, uMaxPos, uv.y);
+     if(uv.y >= uTop) {
+          position += computeFonction(uTop, 1.0, uv.y);
       }
 
       // LEFT / RIGHT
       if(uv.x <= uLeft) {
-        position += map(0.0, uLeft, uMaxPos, 0.0, uv.x);
+          position += computeFonction(uLeft, 0.0, uv.x);
       }
       if(uv.x >= uRight) {
-        position += map(uRight, 1.0, 0.0, uMaxPos, uv.x);
+          position += computeFonction(uRight, 1.0, uv.x);
       }
 
-
-
-/*      position = map(0.0, uBottom, maxPos, 0.0, uv.y) * float(uv.y <= uBottom) +
-                 map(uTop, 1.0, 0.0, maxPos, uv.y) * float(uv.y >= uTop) +
-                 map(0.0, uLeft, maxPos, 0.0, uv.x) * float(uv.x <= uLeft) +
-                 map(uRight, 1.0, 0.0, maxPos, uv.x) * float(uv.x >= uRight);
-*/
       float bias = position * uBlur;
+      if(uDebug) {
+        gl_FragColor = vec4( min(bias, 1.0) , 0.0, 0.0, 1.0 );
+        return;
+      }
 
-      vec4 blurred_texture = texture2D(uTexture, uv.xy, bias);      
+      vec4 blurred_texture = texture2D(uTexture, uv, bias);      
       vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, uSaturation);
       gl_FragColor = vec4(textureRGBSaturated, 1.0);
-
+      
     }
   `
 )

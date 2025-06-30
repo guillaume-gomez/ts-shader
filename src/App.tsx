@@ -14,13 +14,15 @@ function App() {
   const [width, setWidth] = useState<number>(0);
   const [height, setHeight] = useState<number>(0);
   const [enable, setEnable] = useState<boolean>(true);
+  const [debug, setDebug] = useState<boolean>(true);
   const [saturation, setSaturation] = useState<number>(0);
   const [blur, setBlur] = useState<number>(1);
-  const [maxPos, setMaxPos] = useState<number>(0.5);
+  const [threshold, setThreshold] = useState<number>(0.5);
   const [top, setTop] = useState<number>(0.25);
   const [right, setRight] = useState<number>(0.25);
   const [left, setLeft] = useState<number>(0.25);
   const [bottom, setBottom] = useState<number>(0.25);
+
 
   function onChange(imageBase64: string, width: number, height: number) {
     setImageBase64(imageBase64);
@@ -52,6 +54,11 @@ function App() {
             onToggle={(value) => setEnable(value)}
             value={enable}
           />
+          <Toggle
+            label="Debug"
+            onToggle={(value) => setDebug(value)}
+            value={debug}
+          />
           <Range 
             label="Saturation"
             value={saturation}
@@ -71,12 +78,12 @@ function App() {
             float={true}
           />
           <Range 
-            label="Max pos"
-            value={maxPos}
-            onChange={(newValue) => setMaxPos(newValue)}
-            min={0}
-            max={5}
-            step={0.1}
+            label="Threshold"
+            value={threshold}
+            onChange={(newValue) => setThreshold(newValue)}
+            min={0.5}
+            max={1}
+            step={0.01}
             float={true}
           />
           <Range 
@@ -128,17 +135,18 @@ function App() {
               width={width}
               height={height}
               enableEffect={enable}
+              debug={debug}
               saturation={saturation}
+              threshold={threshold}
               blur={blur}
               top={top}
               bottom={bottom}
-              maxPos={maxPos}
               right={right}
               left={left}
             />
           }
         </Card>
-        
+
       </div>
     </div>
   )

@@ -16,7 +16,8 @@ interface PlaneProps {
   height: number;
   enableEffect: boolean;
   debug: boolean;
-  saturation: number;  
+  saturation: number;
+  threshold: number;
   blur: number;
   top: number;
   left: number;
@@ -31,6 +32,8 @@ function Plane({
   height,
   enableEffect,
   saturation,
+  threshold,
+  debug,
   blur,
   top,
   bottom,
@@ -51,14 +54,15 @@ function Plane({
 	      
 	      <tiltShiftMaterial
 	        uTexture={texture}
+          uDebug={debug}
 	        uEnable={enableEffect}
 	        uSaturation={saturation}
+          uThreshold={threshold}
           uBlur={blur}
-          uTop={top}
+          uTop={1.0 - top}
           uBottom={bottom}
           uLeft={left}
-          uRight={right}
-          uMaxPos={maxPos}
+          uRight={1.0 - right}
 	      />
 	      </mesh>
 	)
