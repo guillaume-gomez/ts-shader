@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ThreeJSRendering from "./Components/ThreeJS/ThreeJSRendering";
 import ThreeJSRendering2 from "./Components/ThreeJS/ThreeJSRenderingTest";
 import InputFileWithPreview from "./Components/InputFileWithPreview";
+import TiltShiftControllerCanvas from "./Components/TiltShiftControllerCanvas";
 import Toggle from "./Components/Toggle";
 import Range from "./Components/Range";
 import Card from "./Components/Card";
@@ -130,20 +131,26 @@ function App() {
               <span className="loading loading-bars w-16 text-primary"></span>
               <span>render explanation</span>
             </div> :
-            <ThreeJSRendering
-              base64Texture={imageBase64}
-              width={width}
-              height={height}
-              enableEffect={enable}
-              debug={debug}
-              saturation={saturation}
-              threshold={threshold}
-              blur={blur}
-              top={top}
-              bottom={bottom}
-              right={right}
-              left={left}
-            />
+            <>
+              <TiltShiftControllerCanvas
+                width={width}
+                height={height}
+              />
+              <ThreeJSRendering
+                base64Texture={imageBase64}
+                width={width}
+                height={height}
+                enableEffect={enable}
+                debug={debug}
+                saturation={saturation}
+                threshold={threshold}
+                blur={blur}
+                top={top}
+                bottom={bottom}
+                right={right}
+                left={left}
+              />
+            </>
           }
         </Card>
 
