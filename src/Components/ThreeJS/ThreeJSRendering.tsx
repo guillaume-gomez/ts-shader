@@ -15,13 +15,13 @@ interface ThreeJSRenderingProps {
     height: number;
     enableEffect: boolean;
     debug: boolean;
-    maxPos: number;
     saturation: number;
     blur: number;
     top: number;
     left: number;
     right: number;
     bottom: number;
+    threshold: number;
 }
 
 
@@ -31,10 +31,11 @@ function ThreeJSRendering({
   height,
   enableEffect,
   saturation,
-  maxPos,
   blur,
+  debug,
   top,
   bottom,
+  threshold,
   left,
   right
 } : ThreeJSRenderingProps) {
@@ -77,12 +78,13 @@ function ThreeJSRendering({
               base64Texture={base64Texture}
               enableEffect={enableEffect}
               saturation={saturation}
+              threshold={threshold}
               blur={blur}
               top={top}
               bottom={bottom}
               left={left}
               right={right}
-              maxPos={maxPos}
+              debug={debug}
             />
          
         </Suspense >
