@@ -6,6 +6,11 @@ interface TiltShiftControllerCanvasProps {
   height: number;
 }
 
+interface Points {
+  x: number;
+  y: number;
+}
+
 function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasProps) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
@@ -15,6 +20,7 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
   const mouseRef = useRef({x: 0, y: 0});
   const canvasRefPosition = useRef({x: -1, y: -1});
   const [clicked, setClicked ] = useState<boolean>(false);
+  const points = useState<Points[]>([{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}])
 
   function getCanvasPositionFromPage(el) {
     let xPosition = 0;
