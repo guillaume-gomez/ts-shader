@@ -22,18 +22,12 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
   const [clicked, setClicked ] = useState<boolean>(false);
   const points = useState<Points[]>([{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}])
 
-  function getCanvasPositionFromPage(el) {
-    let xPosition = 0;
-    let yPosition = 0;
-   
-    while (el) {
-      xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-      yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-      el = el.offsetParent;
-    }
+  function getCanvasPositionFromPage(canvas) {
+    
+    var rect = canvas.getBoundingClientRect();
     return {
-      x: xPosition,
-      y: yPosition
+      x: rect.left,
+      y: rect.top
     };
   } 
 
@@ -76,8 +70,8 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
       height={height}
       style={{background: "#FF000055", zIndex: 100}}
       onMouseMove={(event) => {
-         mouseRef.current.x = event.clientX - canvasRefPosition.current.x;
-         mouseRef.current.y = event.clientY - canvasRefPosition.current.y;
+        mouseRef.current.x = event.clientX - canvasRefPosition.current.x;
+        mouseRef.current.y = window.scrollY + event.clientY - canvasRefPosition.current.y;
       }}
       onMouseDown={() => {
         setClicked(false);
