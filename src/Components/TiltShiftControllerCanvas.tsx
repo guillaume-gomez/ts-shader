@@ -20,6 +20,7 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
   const mouseRef = useRef({x: 0, y: 0});
   const canvasRefPosition = useRef({x: -1, y: -1});
   const [clicked, setClicked ] = useState<boolean>(false);
+  const toto = useRef<boolean>(false);
   const points = useState<Points[]>([{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}])
 
   function getCanvasPositionFromPage(canvas) {
@@ -49,7 +50,7 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
     contextRef.current.arc(x, y, 15, 0, 2 * Math.PI, true);
-    contextRef.current.fillStyle = clicked ? "#FF6A6A" : "#00FFDD";
+    contextRef.current.fillStyle = toto.current ? "#FF6A6A" : "#00FFDD";
     contextRef.current.fill();
 
     requestAnimationFrame(animate);
@@ -60,7 +61,6 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []); // Make sure the effect runs only once
-
 
   return (
     <canvas
@@ -75,9 +75,11 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
       }}
       onMouseDown={() => {
         setClicked(false);
+        toto.current = false;
       }}
       onMouseUp={() => {
         setClicked(true);
+        toto.current = true;
       }}
     />
   )
