@@ -11,6 +11,8 @@ interface Points {
   y: number;
 }
 
+const RADIUS = 15;
+
 function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasProps) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
@@ -19,18 +21,36 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
   const contextRef = useRef();
   const mouseRef = useRef({x: 0, y: 0});
   const canvasRefPosition = useRef({x: -1, y: -1});
-  const [clicked, setClicked ] = useState<boolean>(false);
-  const toto = useRef<boolean>(false);
-  const points = useState<Points[]>([{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}])
+  const clicked = useRef<boolean>(false);
+  const [points, setPoints] = useState<Points[]>([
+    { x: 0.25 * width, y: 0.25 * height },
+    { x: 0.75 * width, y: 0.25 * height },
+    { x: 0.25 * width, y: 0.75 * height },
+    { x: 0.75 * width, y: 0.75 * height }
+  ])
 
   function getCanvasPositionFromPage(canvas) {
-    
-    var rect = canvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
     return {
       x: rect.left,
       y: rect.top
     };
-  } 
+  }
+
+  function isIn(point: Point, mouseX: number, mouseY: number) {
+    // get distance between the point and circle's center
+    // using the Pythagorean Theorem
+    const distX = mouseX - point.x;
+    const distY = mouseY - point.y;
+    const distance = Math.sqrt( (distX*distX) + (distY*distY) );
+
+    // if the distance is less than the circle's
+    // radius the point is inside!
+    if (distance <= RADIUS) {
+      return true;
+    }
+    return false;
+  }
 
   function animate() {
     if(!canvasRef.current) {
@@ -49,9 +69,17 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
 
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
-    contextRef.current.arc(x, y, 15, 0, 2 * Math.PI, true);
-    contextRef.current.fillStyle = toto.current ? "#FF6A6A" : "#00FFDD";
+    contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
+    contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#00FFDD";
     contextRef.current.fill();
+    
+    points.map( point => {
+      const { x, y } = point;
+      contextRef.current.beginPath();
+      contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
+      contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";
+      contextRef.current.fill();
+    })
 
     requestAnimationFrame(animate);
 
@@ -70,16 +98,14 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
       height={height}
       style={{background: "#FF000055", zIndex: 100}}
       onMouseMove={(event) => {
-        mouseRef.current.x = event.clientX - canvasRefPosition.current.x;
+        mouseRef.current.x = window.scrollX + event.clientX - canvasRefPosition.current.x;
         mouseRef.current.y = window.scrollY + event.clientY - canvasRefPosition.current.y;
       }}
       onMouseDown={() => {
-        setClicked(false);
-        toto.current = false;
+        clicked.current = false;
       }}
       onMouseUp={() => {
-        setClicked(true);
-        toto.current = true;
+        clicked.current = true;
       }}
     />
   )
