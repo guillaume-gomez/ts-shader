@@ -1,9 +1,9 @@
-
 import { useEffect, useState, useRef } from "react";
 
 interface TiltShiftControllerCanvasProps {
   width: number;
   height: number;
+  onChange: (points: Points[]) => void;
 }
 
 interface Points {
@@ -13,7 +13,7 @@ interface Points {
 
 const RADIUS = 15;
 
-function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasProps) {
+function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftControllerCanvasProps) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
   const requestRef = useRef();
@@ -22,7 +22,8 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
   const mouseRef = useRef({x: 0, y: 0});
   const canvasRefPosition = useRef({x: -1, y: -1});
   const clicked = useRef<boolean>(false);
-  const [points, setPoints] = useState<Points[]>([
+  const clickedIndex = useRef<number>(-1);
+  const points = useRef<Points[]>([
     { x: 0.25 * width, y: 0.25 * height },
     { x: 0.75 * width, y: 0.25 * height },
     { x: 0.25 * width, y: 0.75 * height },
@@ -52,6 +53,16 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
     return false;
   }
 
+  function hasClicked(points: Point[], mouseX: number, mouseY: number) : boolean {
+    points.forEach((point, index) => {
+      if(isIn(point, mouseX, mouseY)) {
+        clickedIndex.current = index;
+        return true;
+      }
+    })
+    return false;
+  }
+
   function animate() {
     if(!canvasRef.current) {
       requestAnimationFrame(animate);
@@ -73,16 +84,30 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
     contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#00FFDD";
     contextRef.current.fill();
     
-    points.map( point => {
+    points.current.map( (point, index) => {
       const { x, y } = point;
       contextRef.current.beginPath();
       contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
-      contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";
+      
+      if(clickedIndex.current === index) {
+        contextRef.current.fillStyle = "#FF01F1";
+      } else {
+        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";  
+      }
       contextRef.current.fill();
     })
 
     requestAnimationFrame(animate);
+  }
 
+  function computePositionSize() {
+    const orderedPoints = points.current.slice();
+    orderedPoints.sort((a, b) => {
+      return (a.x - b.x) + (a.y - b.y);
+    });
+    console.log(orderedPoints)
+
+    onChange([topLeft, topRight, bottomLeft, bottomRight]);
   }
 
   useEffect(() => {
@@ -100,12 +125,28 @@ function TiltShiftControllerCanvas({width, height} : TiltShiftControllerCanvasPr
       onMouseMove={(event) => {
         mouseRef.current.x = window.scrollX + event.clientX - canvasRefPosition.current.x;
         mouseRef.current.y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+
+        if(clickedIndex.current !== -1) {
+          points.current[clickedIndex.current].x = mouseRef.current.x;
+          points.current[clickedIndex.current].y = mouseRef.current.y;
+        }
       }}
-      onMouseDown={() => {
-        clicked.current = false;
-      }}
-      onMouseUp={() => {
+      onMouseDown={(event) => {
+        const x = window.scrollX + event.clientX - canvasRefPosition.current.x;
+        const y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+        
+        hasClicked(points.current, x, y);
         clicked.current = true;
+      }}
+      onMouseUp={(event) => {
+        const x = window.scrollX + event.clientX - canvasRefPosition.current.x;
+        const y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+        
+        clickedIndex.current = - 1;
+        clicked.current = false;
+
+        computePositionSize();
+
       }}
     />
   )
