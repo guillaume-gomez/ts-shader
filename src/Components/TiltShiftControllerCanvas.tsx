@@ -3,7 +3,14 @@ import { useEffect, useState, useRef } from "react";
 interface TiltShiftControllerCanvasProps {
   width: number;
   height: number;
-  onChange: (points: Points[]) => void;
+  onChange: (coords: Coords) => void;
+}
+
+interface Coords {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
 }
 
 interface Points {
@@ -84,6 +91,8 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
     contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#00FFDD";
     contextRef.current.fill();
     
+    drawRectVisible(contextRef.current);
+    
     points.current.map( (point, index) => {
       const { x, y } = point;
       contextRef.current.beginPath();
@@ -97,18 +106,71 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
       contextRef.current.fill();
     })
 
+
     requestAnimationFrame(animate);
   }
 
   function computePositionSize() {
+    const pointsX = points.current.map(point => point.x);
+    const pointsY = points.current.map(point => point.y);
+
+    const minX = Math.min(...pointsX);
+    const maxX = Math.max(...pointsX);
+    const minY = Math.min(...pointsY);
+    const maxY = Math.max(...pointsY);
+
+
+    return {left: minX, right: maxX, top: minY, bottom: maxY };
+   
+  }
+
+  function sendChange() {
+    const {left, right, top, bottom} = computePositionSize();
+     onChange({
+      left: (left/width).toFixed(2),
+      right: (right/width).toFixed(2),
+      top: (top/height).toFixed(2),
+      bottom: (bottom/height).toFixed(2)
+    });
+  }
+
+  function drawRectVisible(context) {
+    const {left, right, top, bottom} = computePositionSize();
+    context.beginPath();
+    context.fillStyle = "#FFFFFF99";
+
+    // top
+    context.rect(0, 0, width, top);
+    //height
+    context.rect(0, bottom, width, height);
+    // left
+    context.rect(0, 0, left, height);
+    // right
+    context.rect(right, 0, width, height);
+
+    context.fill()
+    context.closePath();
+  }
+
+  /*
+  function computePositionSize() {
     const orderedPoints = points.current.slice();
     orderedPoints.sort((a, b) => {
-      return (a.x - b.x) + (a.y - b.y);
+      return (a.x - b.x) + (width * (a.y - b.y));
     });
-    console.log(orderedPoints)
 
-    onChange([topLeft, topRight, bottomLeft, bottomRight]);
-  }
+    /*
+        1 ---------- 2    
+        |            |
+        |            |        
+        |            |
+        3 ---------- 4
+
+        orderedPoints are in that direction
+    */
+  /*
+    onChange(orderedPoints);
+  }*/
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
@@ -117,7 +179,7 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
 
   return (
     <canvas
-      className="absolute"
+      /*className="absolute"*/
       ref={canvasRef}
       width={width}
       height={height}
@@ -145,7 +207,7 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
         clickedIndex.current = - 1;
         clicked.current = false;
 
-        computePositionSize();
+        sendChange();
 
       }}
     />
