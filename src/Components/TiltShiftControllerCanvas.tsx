@@ -31,10 +31,10 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
   const clicked = useRef<boolean>(false);
   const clickedIndex = useRef<number>(-1);
   const points = useRef<Points[]>([
-    { x: 0.25 * width, y: 0.25 * height },
-    { x: 0.75 * width, y: 0.25 * height },
-    { x: 0.25 * width, y: 0.75 * height },
-    { x: 0.75 * width, y: 0.75 * height }
+    { x: width/2 , y: 0.25 * height },
+    { x: 0.25 * width, y: height/2 },
+    { x: 0.75 * width, y: height/2 },
+    { x: width/2, y: 0.75 * height }
   ])
 
   function getCanvasPositionFromPage(canvas) {
