@@ -180,7 +180,7 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
 
   return (
     <canvas
-      /*className="absolute"*/
+      className="absolute"
       ref={canvasRef}
       width={width}
       height={height}
