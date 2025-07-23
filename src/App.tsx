@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import ThreeJSRendering from "./Components/ThreeJS/ThreeJSRendering";
-import ThreeJSRendering2 from "./Components/ThreeJS/ThreeJSRenderingTest";
+//import ThreeJSRendering2 from "./Components/ThreeJS/ThreeJSRenderingTest";
 import InputFileWithPreview from "./Components/InputFileWithPreview";
 import TiltShiftControllerCanvas from "./Components/TiltShiftControllerCanvas";
+import ThreeJsManager from "./Components/ThreeJS/ThreeJsManager";
 import Toggle from "./Components/Toggle";
 import Range from "./Components/Range";
 import Card from "./Components/Card";
 
-import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -132,12 +131,8 @@ function App() {
               <span>render explanation</span>
             </div> :
             <>
-              <TiltShiftControllerCanvas
-                width={width}
-                height={height}
-              />
-              <ThreeJSRendering
-                base64Texture={imageBase64}
+              <ThreeJsManager
+                imageBase64={imageBase64}
                 width={width}
                 height={height}
                 enableEffect={enable}
@@ -149,6 +144,13 @@ function App() {
                 bottom={bottom}
                 right={right}
                 left={left}
+                onChangeParams={ ({ left, right, top, bottom }) => {
+                    setLeft(left);
+                    setRight(1-right);
+                    setTop(top);
+                    setBottom(1-bottom);
+                  }
+                }
               />
             </>
           }
