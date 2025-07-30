@@ -1,4 +1,5 @@
-Resources
+
+## Resources
 
 https://tympanus.net/codrops/2024/07/02/progressive-blur-effect-using-webgl-with-ogl-and-glsl-shaders/
 
