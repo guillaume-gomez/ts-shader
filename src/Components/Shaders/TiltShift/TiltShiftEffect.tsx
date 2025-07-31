@@ -2,7 +2,7 @@ import { Effect } from "postprocessing";
 import * as THREE from "three";
 import React, { forwardRef, useMemo } from 'react'
 import { Uniform } from 'three'
-import tiltShiftShader from './TiltShiftShader';
+import { fragmentShader, vertexShader } from './TiltShiftShader';
 
 
 /**
@@ -45,9 +45,8 @@ class TiltShiftEffect extends Effect {
     maxPos = 0.5
 
   }: TiltShiftEffectOptions) {
-    console.log(time)
     // Initialize uniforms with default values
-    const uniforms = new Map<string, THREE.Uniform<number | THREE.Vector2 | THREE.Color >>([
+    const uniforms = new Map<string, THREE.Uniform<number | THREE.Vector2 >>([
       ["time", new THREE.Uniform(time)],
       ["resolution", new THREE.Uniform(resolution)],
       ["top", new THREE.Uniform(top)],
@@ -60,7 +59,8 @@ class TiltShiftEffect extends Effect {
       ["enable", new THREE.Uniform(enable ? 1 : 0)],
     ]);
 
-    super("TiltShiftEffect", tiltShiftShader, {
+    super("TiltShiftEffect", fragmentShader, {
+      vertexShader,
       // blendFunction: BlendFunction.SCREEN,
       uniforms
     });
