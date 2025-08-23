@@ -31,7 +31,7 @@ function App() {
   }
 
   return (
-    <div className="bg-base-100 flex flex-col gap-4">
+    <div className="container mx-auto bg-base-100 flex flex-col gap-4">
       <h1 className="text-6xl font-title">Tilt shift shader</h1>
       <div className="flex flex-row gap-2">
         {/*<ThreeJSRendering2
@@ -122,6 +122,7 @@ function App() {
             step={0.001}
             float={true}
           />
+
         </Card>
         
         <Card title="Result" className="grow flex w-full h-full">
