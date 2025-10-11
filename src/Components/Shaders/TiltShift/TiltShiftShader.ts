@@ -1,15 +1,16 @@
-/**
- * Dithering shader implementation
- * Applies a dithering effect to the rendered scene
- * 
- * Credits:
- * Original dithering pattern: https://www.shadertoy.com/view/ltSSzW
- */
+export const fragmentShader = /*glsl*/`
 
-const TiltShiftShader = /*glsl*/`
+    #ifdef FRAMEBUFFER_PRECISION_HIGH
 
-    float ITER=3.0;
-    float MAX=0.9;
+    uniform mediump sampler2D map;
+
+#else
+
+    uniform lowp sampler2D map;
+
+#endif
+
+    float ITER=1.0;
 
     uniform vec2 resolution;
     uniform bool enable;
@@ -70,66 +71,90 @@ const TiltShiftShader = /*glsl*/`
     vec4 triangleBlur(sampler2D text, const in vec2 uv, float blurX, float blurY)
     {
         vec2 delta = vec2(blurX, blurY);
-        vec4 sum = vec4(0.0);
+        vec4 color = vec4(0.0);
         float total = 0.0;
         float offset = rand(uv);
         for ( float t = -ITER; t <= ITER; t++) {
 
             float percent = (t + offset - 0.5) / ITER;
             float weight = 1.0 - abs(percent);
-            sum += texture2D(text, uv + delta * percent) * weight;
+            color += texture2D(text, uv + delta * percent) * weight;
             total += weight;
       
         }
-        return sum / total;
+        return color / total;
+    }
+
+    //uniform vec2 maskParams;
+    varying vec2 vUv2;
+    float linearGradientMask(const in float x) {
+        vec2 maskParams = vec2(0.,0.);
+        return step(maskParams.x, x) - step(maskParams.y, x);
+
     }
 
 
-    void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-
-        // Normalized pixel coordinates (from 0 to 1)
-        float left = 0.1;
-        float right = 0.8;
-        float top = 0.6;
-        float bottom = 0.2;
-
-        //outputColor = texture2D(inputBuffer, uv);
+    void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) { 
         
-        
+
+        float mask = linearGradientMask(vUv2.y);
+        vec4 texel = texture2D(map, uv);
+        //outputColor = mix(texel, inputColor, mask);
+        outputColor = vec4(1.0,0.,0., 1.0);
+        return;
+
+       
+
+
         if(uv.x >= left && uv.x <= right && uv.y <= top && uv.y >= bottom) {
-          outputColor =  inputColor;
+          outputColor = inputColor;
           return;
         }
        
-    
         float blurX = 0.;
         float blurY = 0.;
         
         if(uv.x < left) {
-            blurX = MAX * computeFonction(left, 0.0, uv.x);
+            blurX = blur * computeFonction(left, 0.0, uv.x);
         }
         else if(uv.x > right) {
-            blurX = MAX * computeFonction(right, 1.0, uv.x);
+            blurX = blur * computeFonction(right, 1.0, uv.x);
         }
         
         
         if(uv.y > top) {
-            blurY = MAX * computeFonction(top, 1.0, uv.y);
+            blurY = blur * computeFonction(top, 1.0, uv.y);
         }
         else if(uv.y < bottom) {
-            blurY = MAX * computeFonction(left, 0.0, uv.y);
+            blurY = blur * computeFonction(bottom, 0.0, uv.y);
         }
         
         
         // debug
-        outputColor = vec4(blurY, blurX,0.0,1.0);
+        if(enable) {
+            outputColor = vec4(blurY, blurX,0.0,1.0);
+            return;
+        }
 
       // Output to screen
-      // vec4 blurred_texture = triangleBlur(inputBuffer, uv, blurX, blurY);
-      //vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, saturation);
-      //outputColor = vec4(textureRGBSaturated, inputColor.a);
+      vec4 blurred_texture = triangleBlur(inputBuffer, uv, blurX, blurY);
+      vec3 textureRGBSaturated = saturateFn(blurred_texture.rgb, saturation);
+      outputColor = vec4(textureRGBSaturated, inputColor.a);
+
    }
 
 `;
 
-export default TiltShiftShader; 
+
+
+export const vertexShader = /*glsl*/`
+    uniform vec2 rotation;
+    varying vec2 vUv2;
+
+    void mainSupport(const in vec2 uv) {
+
+        vUv2 = (uv - 0.5) * 2.0 * vec2(aspect, 1.0);
+        vUv2 = vec2(dot(rotation, vUv2), dot(rotation, vec2(vUv2.y, -vUv2.x)));
+
+    }
+`;
