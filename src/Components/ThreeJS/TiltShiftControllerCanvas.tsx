@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 interface TiltShiftControllerCanvasProps {
   width: number;
   height: number;
+  widthCanvas: number;
+  heightCanvas: number;
   onChange: (coords: Coords) => void;
 }
 
@@ -20,7 +22,13 @@ interface Points {
 
 const RADIUS = 15;
 
-function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftControllerCanvasProps) {
+function TiltShiftControllerCanvas({
+  width,
+  height,
+  widthCanvas,
+  heightCanvas,
+  onChange
+} : TiltShiftControllerCanvasProps) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
   const requestRef = useRef();
@@ -184,10 +192,10 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
       ref={canvasRef}
       width={width}
       height={height}
-      style={{background: "#FF000055", zIndex: 100}}
+      style={{background: "#FF000055", zIndex: 100, width: widthCanvas, height: heightCanvas }}
       onMouseMove={(event) => {
-        mouseRef.current.x = window.scrollX + event.clientX - canvasRefPosition.current.x;
-        mouseRef.current.y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+        mouseRef.current.x = window.scrollX + (event.clientX - canvasRefPosition.current.x) *  width/widthCanvas;
+        mouseRef.current.y = window.scrollY + (event.clientY - canvasRefPosition.current.y)  * height/heightCanvas;
 
         if(clickedIndex.current !== -1) {
           points.current[clickedIndex.current].x = mouseRef.current.x;
@@ -195,15 +203,15 @@ function TiltShiftControllerCanvas({ width, height, onChange } : TiltShiftContro
         }
       }}
       onMouseDown={(event) => {
-        const x = window.scrollX + event.clientX - canvasRefPosition.current.x;
-        const y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+        const x = window.scrollX + (event.clientX - canvasRefPosition.current.x) *  width/widthCanvas;
+        const y = window.scrollY + (event.clientY - canvasRefPosition.current.y)  * height/heightCanvas;
         
         hasClicked(points.current, x, y);
         clicked.current = true;
       }}
       onMouseUp={(event) => {
-        const x = window.scrollX + event.clientX - canvasRefPosition.current.x;
-        const y = window.scrollY + event.clientY - canvasRefPosition.current.y;
+        const x = window.scrollX + (event.clientX - canvasRefPosition.current.x) *  width/widthCanvas;
+        const y = window.scrollY + (event.clientY - canvasRefPosition.current.y)  * height/heightCanvas;
         
         clickedIndex.current = - 1;
         clicked.current = false;
