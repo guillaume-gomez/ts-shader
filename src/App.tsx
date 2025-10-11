@@ -26,8 +26,12 @@ function App() {
 
   function onChange(imageBase64: string, width: number, height: number) {
     setImageBase64(imageBase64);
-    setWidth(width)
-    setHeight(height)
+    setWidth(width);
+    setHeight(height);
+    setTop(0.25)
+    setBottom(0.25)
+    setLeft(0.25)
+    setRight(0.25)
   }
 
   return (
