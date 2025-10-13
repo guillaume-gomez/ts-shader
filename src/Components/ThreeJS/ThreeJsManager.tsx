@@ -46,8 +46,6 @@ function ThreeJsManager({
       return;
     }
 
-    console.log("width/height ", canvasContainerRef.current.offsetWidth, " ", canvasContainerRef.current.offsetHeight );
-
     if(width >= height && canvasContainerRef.current.offsetWidth < width) {
         const aspectRatio = height/width;
         const border = 50;
@@ -61,7 +59,6 @@ function ThreeJsManager({
         const border = 50;
 
         const newHeight = canvasContainerRef.current.offsetHeight - border;
-        console.log("newHeight:  ", newHeight)
         setWidthCanvas(newHeight * aspectRatio)
         setHeightCanvas(newHeight);
     } else {
@@ -70,9 +67,6 @@ function ThreeJsManager({
     }
   
   }, [imageBase64, width, height]) 
-
-
-  console.log(widthCanvas, ", ", heightCanvas, "alors que ", width, ",, ", height) 
 
   return (
     <div ref={canvasContainerRef} className="flex flex-col gap-5 w-full h-screen">
@@ -84,6 +78,10 @@ function ThreeJsManager({
             height={height}
             widthCanvas={widthCanvas}
             heightCanvas={heightCanvas}
+            top={top}
+            bottom={bottom}
+            right={right}
+            left={left}
             onChange={onChangeParams}
           />
         }
