@@ -17,6 +17,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "daisyui": "^5.0.46",
     "date-fns": "^4.1.0",
+    "lodash": "^4.17.21",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rooks": "^8.0.0",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/lodash": "^4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
