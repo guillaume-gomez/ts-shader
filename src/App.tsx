@@ -128,7 +128,6 @@ function App() {
           />
 
         </Card>
-        
         <Card title="Result" className="grow flex w-full h-full">
           {!imageBase64 ?
             <div className="flex flex-col gap-5 items-center">
@@ -160,7 +159,6 @@ function App() {
             </>
           }
         </Card>
-
       </div>
     </div>
   )
