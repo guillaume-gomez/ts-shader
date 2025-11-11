@@ -136,10 +136,10 @@ function TiltShiftControllerCanvas({
     const {left, right, top, bottom} = computePositionSize();
     
     onChange({
-      left: Math.min(1, (left/(width/2)).toFixed(2) ),
-      right: Math.max(0, ((right - width/2)/(width/2)).toFixed(2) ),
-      top: Math.min(1, (top/(height/2)).toFixed(2) ),
-      bottom: Math.max(0, ((bottom - height/2)/(height/2)).toFixed(2) )
+      left: Math.min(1, (left/(width/2)) ),
+      right: Math.max(0, ((right - width/2)/(width/2)) ),
+      top: Math.min(1, (top/(height/2)) ),
+      bottom: Math.max(0, ((bottom - height/2)/(height/2)) )
     });
   }
 
