@@ -96,7 +96,7 @@ function TiltShiftControllerCanvas({
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
     contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
-    contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#00FFDD";
+    contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#542E71";
     contextRef.current.fill();
     
     drawRectVisible(contextRef.current);
@@ -107,11 +107,12 @@ function TiltShiftControllerCanvas({
       contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
       
       if(clickedIndex.current === index) {
-        contextRef.current.fillStyle = "#FF01F1";
+        contextRef.current.fillStyle = "#FFFFFF";
       } else {
-        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";  
+        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#FB3640" : "#FDCA40";  
       }
       contextRef.current.fill();
+      contextRef.current.stroke();
     })
 
 
