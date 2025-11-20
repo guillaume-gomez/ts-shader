@@ -43,7 +43,7 @@ function TiltShiftControllerCanvas({
     { x: 0.25 * width, y: height/2 },
     { x: 0.75 * width, y: height/2 },
     { x: width/2, y: 0.75 * height }
-  ])
+  ]);
 
   function getCanvasPositionFromPage(canvas) {
     const rect = canvas.getBoundingClientRect();
@@ -96,7 +96,7 @@ function TiltShiftControllerCanvas({
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
     contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
-    contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : "#542E71";
+    contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : computeColorFromTheme("--color-accent");
     contextRef.current.fill();
     
     drawRectVisible(contextRef.current);
@@ -109,7 +109,7 @@ function TiltShiftControllerCanvas({
       if(clickedIndex.current === index) {
         contextRef.current.fillStyle = "#FFFFFF";
       } else {
-        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#FB3640" : "#FDCA40";  
+        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? computeColorFromTheme("--color-secondary") : computeColorFromTheme("--color-primary");  
       }
       contextRef.current.fill();
       contextRef.current.stroke();
@@ -117,6 +117,15 @@ function TiltShiftControllerCanvas({
 
 
     requestAnimationFrame(animate);
+  }
+
+  function computeColorFromTheme(variable: string): string {
+    const style = window.getComputedStyle(document.body);
+    try {
+      return style.getPropertyValue(variable);  
+    } catch {
+      return "black";  
+    }
   }
 
   function computePositionSize() {
