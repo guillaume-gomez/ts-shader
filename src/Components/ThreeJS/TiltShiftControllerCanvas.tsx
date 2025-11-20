@@ -120,6 +120,7 @@ function TiltShiftControllerCanvas({
   }
 
   function computeColorFromTheme(variable: string): string {
+    // todo memoize the style
     const style = window.getComputedStyle(document.body);
     try {
       return style.getPropertyValue(variable);  
