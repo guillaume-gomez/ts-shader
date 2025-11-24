@@ -1,7 +1,7 @@
-import { Mesh, Vector2, TextureLoader } from 'three';
+import { Mesh, Vector2, Vector3, TextureLoader } from 'three';
 import { useRef, useEffect, useState, RefObject } from 'react';
 import useAudioData from "./Hooks/useAudioData";
-import { useLoader, extend } from '@react-three/fiber';
+import { useLoader, extend, useFrame } from '@react-three/fiber';
 import TiltShiftMaterial from "../Shaders/TiltShift/TiltShiftMaterial";
 
 
@@ -45,6 +45,20 @@ function Plane({
 	const [texture] = useLoader(TextureLoader, [
     base64Texture
   ]);
+
+  useFrame((state) => {
+    let camera = state.camera;
+    const fov = camera.fov * ( Math.PI / 180 );
+    const fovh = 2*Math.atan(Math.tan(fov/2) * camera.aspect);
+    
+    const size = new Vector3(1, height/width, 0.001);
+
+    let dx = size.z / 2 + Math.abs( size.x / 2 / Math.tan( fovh / 2 ) );
+    let dy = size.z / 2 + Math.abs( size.y / 2 / Math.tan( fov / 2 ) );
+    let cameraZ = Math.max(dx, dy);
+
+    camera.position.set( 0, 0, cameraZ);
+  })
 
 	return (
 		<mesh
