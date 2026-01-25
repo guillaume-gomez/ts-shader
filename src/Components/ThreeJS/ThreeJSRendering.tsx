@@ -57,7 +57,6 @@ const ThreeJSRendering = forwardRef(
           >
             <color attach="background" args={[backgroundColor]} />
             <Suspense fallback={<FallBackLoader/>}>
-              
                 <Plane
                   width={1}
                   height={height/width}
@@ -72,10 +71,9 @@ const ThreeJSRendering = forwardRef(
                   right={right}
                   debug={debug}
                 />
-             
             </Suspense >
           </Canvas>
-      ); 
+      );
   }
 );
 
