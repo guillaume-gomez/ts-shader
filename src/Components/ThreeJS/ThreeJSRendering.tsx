@@ -1,10 +1,10 @@
-import { Suspense, forwardRef, useRef } from 'react';
+import { Suspense, forwardRef, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useFullscreen } from "rooks";
 import { Mesh, Vector3, Box3 } from "three";
 import { OrthographicCamera } from '@react-three/drei';
 import FallBackLoader from "./FallBackLoader";
-import Plane from "./Plane";
+import TiltShiftMesh from "./TiltShiftMesh";
 
 interface ThreeJSRenderingProps {
     base64Texture: string;
@@ -42,7 +42,21 @@ const ThreeJSRendering = forwardRef(
     }: ThreeJSRenderingProps, canvasRef) => {
       const { toggleFullscreen } = useFullscreen({ target: canvasRef });
       const backgroundColor = "blue";
-      const ref = useRef<OrthographicCamera>(null);
+      const cameraRef = useRef<OrthographicCamera>(null);
+
+      useEffect(() => {
+        recenterCamera();
+      }, [width, height, widthCanvas, heightCanvas, cameraRef]);
+
+      function recenterCamera() {
+        if(!cameraRef.current) {
+          return;
+        }
+        cameraRef.current.top = height/2;
+        cameraRef.current.bottom = - height/2;
+        cameraRef.current.left = - width/2;
+        cameraRef.current.right = width/2;
+      }
 
       return (
           <Canvas
@@ -59,7 +73,7 @@ const ThreeJSRendering = forwardRef(
             <pointLight intensity={0.75} position={[500, 500, 1000]} />
 
             <Suspense fallback={<FallBackLoader/>}>
-              <Plane
+              <TiltShiftMesh
                 width={width}
                 height={height}
                 base64Texture={base64Texture}
@@ -73,15 +87,10 @@ const ThreeJSRendering = forwardRef(
                 right={right}
                 debug={debug}
               />
-              <mesh
-                position={[0,0,-1000]}
-              >
-                <boxGeometry args={[width - 10, height-10, 1]} />
-                <meshStandardMaterial attach="material" color={"orange"} />
-              </mesh>
 
               <OrthographicCamera
                 makeDefault
+                ref={cameraRef}
                 zoom={1}
                 top={height/2}
                 bottom={-height/2}
@@ -89,7 +98,7 @@ const ThreeJSRendering = forwardRef(
                 right={-width/2}
                 near={1}
                 far={2000}
-                position={[0, 0, 200]}
+                position={[0, 0, 100]}
               />
             </Suspense >
           </Canvas>

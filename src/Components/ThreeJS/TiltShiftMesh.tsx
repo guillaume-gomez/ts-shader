@@ -9,7 +9,7 @@ const base64Texture2 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDA
 // to notify to three-js (it will not work without)
 extend({ TiltShiftMaterial })
 
-interface PlaneProps {
+interface TiltShiftMeshProps {
   base64Texture: string;
   width: number;
   height: number;
@@ -25,7 +25,7 @@ interface PlaneProps {
   maxPos: number;
 }
 
-function Plane({
+function TiltShiftMesh({
   base64Texture,
   width,
   height,
@@ -40,7 +40,7 @@ function Plane({
   left,
   maxPos
 
-}: PlaneProps) {
+}: TiltShiftMeshProps) {
 	const [texture] = useLoader(TextureLoader, [
     base64Texture
   ]);
@@ -65,4 +65,4 @@ function Plane({
 	      </mesh>
 	)
 };
-export default Plane;
+export default TiltShiftMesh;
