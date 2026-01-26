@@ -1,7 +1,6 @@
 import { Mesh, Vector2, Vector3, TextureLoader } from 'three';
-import { useRef, useEffect, useState, RefObject } from 'react';
-import useAudioData from "./Hooks/useAudioData";
-import { useLoader, extend, useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
+import { useLoader, extend } from '@react-three/fiber';
 import TiltShiftMaterial from "../Shaders/TiltShift/TiltShiftMaterial";
 
 
@@ -10,7 +9,7 @@ const base64Texture2 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDA
 // to notify to three-js (it will not work without)
 extend({ TiltShiftMaterial })
 
-interface PlaneProps {
+interface TiltShiftMeshProps {
   base64Texture: string;
   width: number;
   height: number;
@@ -26,7 +25,7 @@ interface PlaneProps {
   maxPos: number;
 }
 
-function Plane({
+function TiltShiftMesh({
   base64Texture,
   width,
   height,
@@ -41,31 +40,16 @@ function Plane({
   left,
   maxPos
 
-}: PlaneProps) {
+}: TiltShiftMeshProps) {
 	const [texture] = useLoader(TextureLoader, [
     base64Texture
   ]);
-
-  useFrame((state) => {
-    let camera = state.camera;
-    const fov = camera.fov * ( Math.PI / 180 );
-    const fovh = 2*Math.atan(Math.tan(fov/2) * camera.aspect);
-    
-    const size = new Vector3(1, height/width, 0.001);
-
-    let dx = size.z / 2 + Math.abs( size.x / 2 / Math.tan( fovh / 2 ) );
-    let dy = size.z / 2 + Math.abs( size.y / 2 / Math.tan( fov / 2 ) );
-    let cameraZ = Math.max(dx, dy);
-
-    camera.position.set( 0, 0, cameraZ);
-  })
 
 	return (
 		<mesh
 	      position={[0,0,0]}
 	    >
-	      <planeGeometry args={[width, height]} />
-	      
+	      <boxGeometry args={[width, height, 1]} />
 	      <tiltShiftMaterial
 	        uTexture={texture}
           uDebug={debug}
@@ -80,5 +64,5 @@ function Plane({
 	      />
 	      </mesh>
 	)
-} 
-export default Plane;
+};
+export default TiltShiftMesh;
