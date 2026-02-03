@@ -1,6 +1,5 @@
-import { Mesh, Vector2, TextureLoader } from 'three';
-import { useRef, useEffect, useState, RefObject } from 'react';
-import useAudioData from "./Hooks/useAudioData";
+import { Mesh, Vector2, Vector3, TextureLoader } from 'three';
+import { useRef } from 'react';
 import { useLoader, extend } from '@react-three/fiber';
 import TiltShiftMaterial from "../Shaders/TiltShift/TiltShiftMaterial";
 
@@ -10,7 +9,7 @@ const base64Texture2 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDA
 // to notify to three-js (it will not work without)
 extend({ TiltShiftMaterial })
 
-interface PlaneProps {
+interface TiltShiftMeshProps {
   base64Texture: string;
   width: number;
   height: number;
@@ -26,7 +25,7 @@ interface PlaneProps {
   maxPos: number;
 }
 
-function Plane({
+function TiltShiftMesh({
   base64Texture,
   width,
   height,
@@ -41,7 +40,7 @@ function Plane({
   left,
   maxPos
 
-}: PlaneProps) {
+}: TiltShiftMeshProps) {
 	const [texture] = useLoader(TextureLoader, [
     base64Texture
   ]);
@@ -50,8 +49,7 @@ function Plane({
 		<mesh
 	      position={[0,0,0]}
 	    >
-	      <planeGeometry args={[width, height]} />
-	      
+	      <boxGeometry args={[width, height, 1]} />
 	      <tiltShiftMaterial
 	        uTexture={texture}
           uDebug={debug}
@@ -66,5 +64,5 @@ function Plane({
 	      />
 	      </mesh>
 	)
-} 
-export default Plane;
+};
+export default TiltShiftMesh;

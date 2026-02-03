@@ -45,6 +45,11 @@ function TiltShiftControllerCanvas({
     { x: width/2, y: 0.75 * height }
   ]);
 
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []); // Make sure the effect runs only once
+
   function getCanvasPositionFromPage(canvas) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -91,25 +96,26 @@ function TiltShiftControllerCanvas({
     }
 
     contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
- 
 
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
     contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
     contextRef.current.fillStyle = clicked.current ? "#FF6A6A" : computeColorFromTheme("--color-accent");
     contextRef.current.fill();
-    
+
     drawRectVisible(contextRef.current);
-    
+
     points.current.map( (point, index) => {
       const { x, y } = point;
       contextRef.current.beginPath();
       contextRef.current.arc(x, y, RADIUS, 0, 2 * Math.PI, true);
-      
+
       if(clickedIndex.current === index) {
         contextRef.current.fillStyle = "#FFFFFF";
       } else {
-        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? computeColorFromTheme("--color-secondary") : computeColorFromTheme("--color-primary");  
+        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ?
+          computeColorFromTheme("--color-secondary") :
+          computeColorFromTheme("--color-primary");
       }
       contextRef.current.fill();
       contextRef.current.stroke();
@@ -123,9 +129,9 @@ function TiltShiftControllerCanvas({
     // todo memoize the style
     const style = window.getComputedStyle(document.body);
     try {
-      return style.getPropertyValue(variable);  
+      return style.getPropertyValue(variable);
     } catch {
-      return "black";  
+      return "black";
     }
   }
 
@@ -140,12 +146,12 @@ function TiltShiftControllerCanvas({
 
 
     return {left: minX, right: maxX, top: minY, bottom: maxY };
-   
+
   }
 
   function sendChange() {
     const {left, right, top, bottom} = computePositionSize();
-    
+
     onChange({
       left: Math.min(1, (left/(width/2)) ),
       right: Math.max(0, ((right - width/2)/(width/2)) ),
@@ -180,9 +186,9 @@ function TiltShiftControllerCanvas({
     });
 
     /*
-        1 ---------- 2    
+        1 ---------- 2
         |            |
-        |            |        
+        |            |
         |            |
         3 ---------- 4
 
@@ -191,11 +197,6 @@ function TiltShiftControllerCanvas({
   /*
     onChange(orderedPoints);
   }*/
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Make sure the effect runs only once
 
   return (
     <canvas
@@ -216,14 +217,14 @@ function TiltShiftControllerCanvas({
       onMouseDown={(event) => {
         const x = window.scrollX + (event.clientX - canvasRefPosition.current.x) *  width/widthCanvas;
         const y = window.scrollY + (event.clientY - canvasRefPosition.current.y)  * height/heightCanvas;
-        
+
         hasClicked(points.current, x, y);
         clicked.current = true;
       }}
       onMouseUp={(event) => {
         const x = window.scrollX + (event.clientX - canvasRefPosition.current.x) *  width/widthCanvas;
         const y = window.scrollY + (event.clientY - canvasRefPosition.current.y)  * height/heightCanvas;
-        
+
         clickedIndex.current = - 1;
         clicked.current = false;
 
