@@ -52,6 +52,11 @@ function TiltShiftControllerCanvas({
     ]
   );
 
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []); // Make sure the effect runs only once
+
   useEffect(()  => {
     const [leftPts, others] = leftPoints();
 
@@ -106,7 +111,6 @@ function TiltShiftControllerCanvas({
     ]
   }, [bottom]);
 
-
   function getCanvasPositionFromPage(canvas) {
     const rect = canvas.getBoundingClientRect();
     return {
@@ -153,7 +157,6 @@ function TiltShiftControllerCanvas({
     }
 
     contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
 
     const { x, y } = mouseRef.current;
     contextRef.current.beginPath();
@@ -225,10 +228,10 @@ function TiltShiftControllerCanvas({
     const {left, right, top, bottom} = computePositionSize();
 
     onChange({
-      left: Math.min(1, (left/(width/2)).toFixed(2) ),
-      right: Math.max(0, ((right - width/2)/(width/2)).toFixed(2) ),
-      top: Math.min(1, (top/(height/2)).toFixed(2) ),
-      bottom: Math.max(0, ((bottom - height/2)/(height/2)).toFixed(2) )
+      left: Math.min(1, (left/(width/2)) ),
+      right: Math.max(0, ((right - width/2)/(width/2)) ),
+      top: Math.min(1, (top/(height/2)) ),
+      bottom: Math.max(0, ((bottom - height/2)/(height/2)) )
     });
   }
 
@@ -269,11 +272,6 @@ function TiltShiftControllerCanvas({
   /*
     onChange(orderedPoints);
   }*/
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Make sure the effect runs only once
 
   return (
     <canvas

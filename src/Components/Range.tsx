@@ -45,6 +45,7 @@ function Range({ value, onChange, min = 1, max = 100, step = 1, float = true, la
               onChange={(event) => onChangeFunc(event.target.value)}
               min={min}
               max={max}
+              step={step}
             /> :
             value
           } 

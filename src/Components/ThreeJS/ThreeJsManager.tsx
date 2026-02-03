@@ -65,13 +65,11 @@ function ThreeJsManager({
       setWidthCanvas(width)
       setHeightCanvas(height)
     }
-  
-  }, [imageBase64, width, height]) 
+  }, [imageBase64, width, height]);
 
   return (
     <div ref={canvasContainerRef} className="flex flex-col gap-5 w-full h-screen">
-      
-      <div> 
+      <div>
          { debug &&
           <TiltShiftControllerCanvas
             width={width}
@@ -109,7 +107,6 @@ function ThreeJsManager({
         canvasRef={canvasRef}
         filename="tilt-shift"
       />
-    
     </div>
   )
 }

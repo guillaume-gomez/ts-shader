@@ -128,7 +128,6 @@ function App() {
           />
 
         </Card>
-        
         <Card title="Result" className="grow flex w-full h-full">
           {!imageBase64 ?
             <div className="flex flex-col gap-5 items-center">
@@ -150,17 +149,16 @@ function App() {
                 right={right}
                 left={left}
                 onChangeParams={ ({ left, right, top, bottom }) => {
-                    setLeft(left);
-                    setRight(1-right);
-                    setTop(top);
-                    setBottom(1-bottom);
+                    setLeft(Number(left).toFixed(2));
+                    setRight(Number(1-right).toFixed(2));
+                    setTop(Number(top).toFixed(2));
+                    setBottom(Number(1-bottom).toFixed(2));
                   }
                 }
               />
             </>
           }
         </Card>
-
       </div>
     </div>
   )
