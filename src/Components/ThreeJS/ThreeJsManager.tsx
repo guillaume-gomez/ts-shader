@@ -59,7 +59,6 @@ function ThreeJsManager({
         const border = 50;
 
         const newHeight = canvasContainerRef.current.offsetHeight - border;
-        console.log("newHeight:  ", newHeight)
         setWidthCanvas(newHeight * aspectRatio)
         setHeightCanvas(newHeight);
     } else {
@@ -77,6 +76,10 @@ function ThreeJsManager({
             height={height}
             widthCanvas={widthCanvas}
             heightCanvas={heightCanvas}
+            top={top}
+            bottom={bottom}
+            right={right}
+            left={left}
             onChange={onChangeParams}
           />
         }

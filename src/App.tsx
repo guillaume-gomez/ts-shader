@@ -29,8 +29,8 @@ function App() {
     setWidth(width);
     setHeight(height);
     setTop(0.25)
-    setBottom(0.25)
     setLeft(0.25)
+    setBottom(0.25)
     setRight(0.25)
   }
 

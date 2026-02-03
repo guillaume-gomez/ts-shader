@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { partition } from "lodash";
 
 interface TiltShiftControllerCanvasProps {
   width: number;
@@ -27,7 +28,11 @@ function TiltShiftControllerCanvas({
   height,
   widthCanvas,
   heightCanvas,
-  onChange
+  onChange,
+  left,
+  right,
+  top,
+  bottom
 } : TiltShiftControllerCanvasProps) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
@@ -38,17 +43,73 @@ function TiltShiftControllerCanvas({
   const canvasRefPosition = useRef({x: -1, y: -1});
   const clicked = useRef<boolean>(false);
   const clickedIndex = useRef<number>(-1);
-  const points = useRef<Points[]>([
-    { x: width/2 , y: 0.25 * height },
-    { x: 0.25 * width, y: height/2 },
-    { x: 0.75 * width, y: height/2 },
-    { x: width/2, y: 0.75 * height }
-  ]);
+  const points = useRef<Points[]>(
+    [
+      { x: width/2 , y: top * height },
+      { x: left * width, y: height/2 },
+      { x: right * width, y: height/2 },
+      { x: width/2, y: (1-bottom) * height }
+    ]
+  );
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []); // Make sure the effect runs only once
+
+  useEffect(()  => {
+    const [leftPts, others] = leftPoints();
+
+    const leftPointsUpdated = leftPts.map(point => {
+      return ({x: left*(width/2), y: point.y})
+    });
+
+    points.current = [
+      ...leftPointsUpdated,
+      ...others
+    ]
+  }, [left]);
+
+
+  useEffect(()  => {
+    const [rightPts, others] = rightPoints();
+
+    const rightPointUpdated = rightPts.map(point => {
+      return ({x: (width - (right * width/2)), y: point.y})
+    });
+
+    points.current = [
+      ...rightPointUpdated,
+      ...others
+    ]
+  }, [right]);
+
+  useEffect(()  => {
+    const [topPts, others] = topPoints();
+
+    const topPointUpdated = topPts.map(point => {
+      return ({x: point.x, y: top*(height/2)})
+    });
+
+    points.current = [
+      ...topPointUpdated,
+      ...others
+    ]
+  }, [top]);
+
+
+  useEffect(()  => {
+    const [bottomPts, others] = bottomPoints();
+
+    const bottomPointUpdated = bottomPts.map(point => {
+      return ({x: point.x, y: (height - (bottom * height/2))})
+    });
+
+    points.current = [
+      ...bottomPointUpdated,
+      ...others
+    ]
+  }, [bottom]);
 
   function getCanvasPositionFromPage(canvas) {
     const rect = canvas.getBoundingClientRect();
@@ -113,7 +174,7 @@ function TiltShiftControllerCanvas({
       if(clickedIndex.current === index) {
         contextRef.current.fillStyle = "#FF01F1";
       } else {
-        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";  
+        contextRef.current.fillStyle = isIn(point, mouseRef.current.x, mouseRef.current.y) ? "#0000FF" : "#00FF00";
       }
       contextRef.current.fill();
     })
@@ -133,7 +194,34 @@ function TiltShiftControllerCanvas({
 
 
     return {left: minX, right: maxX, top: minY, bottom: maxY };
+  }
 
+  function leftPoints() {
+    const pointsX = points.current.map(point => point.x);
+    const minX = Math.min(...pointsX);
+
+    return partition(points.current, { x: minX });
+  }
+
+  function rightPoints() {
+    const pointsX = points.current.map(point => point.x);
+    const maxX = Math.max(...pointsX);
+
+    return partition(points.current, { x: maxX });
+  }
+
+  function topPoints() {
+    const pointsY = points.current.map(point => point.y);
+    const minY = Math.min(...pointsY);
+
+    return partition(points.current, { y: minY });
+  }
+
+  function bottomPoints() {
+    const pointsY = points.current.map(point => point.y);
+    const maxY = Math.max(...pointsY);
+
+    return partition(points.current, { y: maxY });
   }
 
   function sendChange() {
